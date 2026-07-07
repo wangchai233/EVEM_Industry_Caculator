@@ -25,18 +25,33 @@ export function MarketSellConfig() {
 
       <div className={styles.row}>
         <label className={styles.label}>销售税率</label>
-        <select
-          className={styles.select}
-          value={config.salesTaxRate}
-          onChange={e => dispatch({
-            type: 'SET_CONFIG',
-            payload: { ...config, salesTaxRate: Number(e.target.value) },
-          })}
-        >
-          {TAX_PRESETS.map(p => (
-            <option key={p} value={p}>{(p * 100).toFixed(1)}%</option>
-          ))}
-        </select>
+        <div className={styles.effRow}>
+          <select
+            className={styles.select}
+            value={config.salesTaxRate}
+            onChange={e => dispatch({
+              type: 'SET_CONFIG',
+              payload: { ...config, salesTaxRate: Number(e.target.value) },
+            })}
+          >
+            {TAX_PRESETS.map(p => (
+              <option key={p} value={p}>{(p * 100).toFixed(1)}%</option>
+            ))}
+          </select>
+          <input
+            className={styles.inputSmall}
+            type="number"
+            min="0"
+            max="100"
+            step="0.1"
+            value={Math.round(config.salesTaxRate * 1000) / 10}
+            onChange={e => dispatch({
+              type: 'SET_CONFIG',
+              payload: { ...config, salesTaxRate: (parseFloat(e.target.value) || 0) / 100 },
+            })}
+          />
+          <span>%</span>
+        </div>
       </div>
 
       <div className={styles.row}>
