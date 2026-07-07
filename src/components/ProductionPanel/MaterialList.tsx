@@ -5,7 +5,7 @@ import styles from './ProductionPanel.module.css';
 
 export function MaterialList() {
   const { state } = useProduction();
-  const { getPrice, setPrice } = useApp();
+  const { setPrice } = useApp();
 
   if (!state.result) return null;
 

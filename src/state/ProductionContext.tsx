@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, type ReactNode, type Dispatch } from 'react';
+import { createContext, useContext, useReducer, type ReactNode, type Dispatch } from 'react';
 import type { ManufacturingConfig, ReverseEngineeringConfig, ProductionResult } from '../types';
 
 type ProjectType = 'manufacturing' | 'reverse';

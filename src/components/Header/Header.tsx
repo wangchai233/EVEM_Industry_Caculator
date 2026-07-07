@@ -9,8 +9,6 @@ export function Header() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
 
-  const activeConfig = priceConfigs.find(c => c.id === activeConfigId);
-
   const handleCreate = () => {
     if (newName.trim()) {
       createPriceConfig(newName.trim());

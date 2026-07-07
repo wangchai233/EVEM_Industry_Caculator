@@ -15,8 +15,8 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       const next = value instanceof Function ? value(prev) : value;
       try {
         localStorage.setItem(key, JSON.stringify(next));
-      } catch {
-        // localStorage 满
+      } catch (e) {
+        console.warn('localStorage 存储失败，可能已满', e);
       }
       return next;
     });

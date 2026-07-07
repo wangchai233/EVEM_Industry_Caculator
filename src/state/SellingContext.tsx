@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, type ReactNode, type Dispatch } from 'react';
+import { createContext, useContext, useReducer, type ReactNode, type Dispatch } from 'react';
 import type { SellingConfig, SellingResult } from '../types';
 
 interface SellingState {

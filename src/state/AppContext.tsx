@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useCallback, type ReactNode } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import type { PriceConfig } from '../types';
 import { defaultItems, allItems, defaultBlueprints, defaultReverse, defaultDecoders } from '../data';

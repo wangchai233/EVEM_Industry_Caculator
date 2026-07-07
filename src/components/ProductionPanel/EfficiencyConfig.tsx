@@ -27,28 +27,33 @@ export function EfficiencyConfig() {
   return (
     <div className={styles.section}>
       {state.projectType === 'manufacturing' && (
-        <div className={styles.effRow}>
-          <label className={styles.label}>材料效率</label>
-          <select
-            className={styles.select}
-            value={config.materialEfficiency}
-            onChange={e => setME(Number(e.target.value))}
-          >
-            {ME_PRESETS.map(p => (
-              <option key={p} value={p}>{(p * 100).toFixed(0)}%</option>
-            ))}
-          </select>
-          <input
-            className={styles.inputSmall}
-            type="number"
-            min="75"
-            max="150"
-            step="0.01"
-            value={Math.round(config.materialEfficiency * 100)}
-            onChange={e => setME(Number(e.target.value) / 100)}
-          />
-          <span>%</span>
-        </div>
+        <>
+          <div className={styles.effRow}>
+            <label className={styles.label}>材料效率</label>
+            <select
+              className={styles.select}
+              value={config.materialEfficiency}
+              onChange={e => setME(Number(e.target.value))}
+            >
+              {ME_PRESETS.map(p => (
+                <option key={p} value={p}>{(p * 100).toFixed(0)}%</option>
+              ))}
+            </select>
+            <input
+              className={styles.inputSmall}
+              type="number"
+              min="75"
+              max="150"
+              step="0.01"
+              value={Math.round(config.materialEfficiency * 100)}
+              onChange={e => setME(Number(e.target.value) / 100)}
+            />
+            <span>%</span>
+          </div>
+          {(config.materialEfficiency < 0.75 || config.materialEfficiency > 1.50) && (
+            <span className={styles.error}>材料效率范围: 75%~150%</span>
+          )}
+        </>
       )}
       <div className={styles.effRow}>
         <label className={styles.label}>时间效率</label>

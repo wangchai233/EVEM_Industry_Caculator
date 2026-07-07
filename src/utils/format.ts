@@ -14,7 +14,7 @@ export function formatTime(totalSeconds: number): string {
   const pad = (n: number) => String(n).padStart(2, '0');
 
   if (days > 0) {
-    return `${String(days).padStart(2, '0')}:${pad(days)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return `${pad(Math.floor(days / 30))}:${pad(days % 30)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   }
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }

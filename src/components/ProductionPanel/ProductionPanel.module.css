@@ -53,6 +53,7 @@
 .summaryLabel { font-size: 11px; color: var(--color-text-secondary); }
 .summaryValue { font-size: 14px; font-weight: 600; }
 .highlight { color: var(--color-primary); font-size: 16px; }
+.error { color: var(--color-danger); font-size: 12px; }
 .sendBtn {
   margin-top: 12px; width: 100%; padding: 10px;
   background: var(--color-primary); color: #fff;
@@ -61,3 +62,15 @@
 }
 .sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 .sendBtn:hover:not(:disabled) { opacity: 0.9; }
+
+@media (max-width: 767px) {
+  .materialTable { font-size: 11px; }
+  .materialTable th:nth-child(2),
+  .materialTable td:nth-child(2),
+  .materialTable th:nth-child(3),
+  .materialTable td:nth-child(3) {
+    display: none;
+  }
+  .priceInput { width: 70px; }
+  .summaryGrid { grid-template-columns: 1fr; }
+}

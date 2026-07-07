@@ -24,5 +24,10 @@
 @media (max-width: 767px) {
   .main {
     flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+  .panel {
+    padding: 12px;
   }
 }

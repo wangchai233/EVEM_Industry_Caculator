@@ -1,7 +1,6 @@
 import { useProduction } from '../../state/ProductionContext';
 import { getBlueprintById } from '../../data';
 import { formatNumber, formatTime } from '../../utils/format';
-import { useApp } from '../../state/AppContext';
 import { useSelling } from '../../state/SellingContext';
 import styles from './ProductionPanel.module.css';
 
