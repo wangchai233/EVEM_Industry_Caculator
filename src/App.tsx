@@ -3,6 +3,7 @@ import { ProductionProvider } from './state/ProductionContext';
 import { SellingProvider } from './state/SellingContext';
 import { Header } from './components/Header/Header';
 import { ProductionPanel } from './components/ProductionPanel/ProductionPanel';
+import { SellingPanel } from './components/SellingPanel/SellingPanel';
 import { ImportExportBar } from './components/ImportExportBar/ImportExportBar';
 import styles from './App.module.css';
 
@@ -17,7 +18,9 @@ function App() {
               <div className={styles.panel}>
                 <ProductionPanel />
               </div>
-              <div className={styles.panel}>出售面板（待实现）</div>
+              <div className={styles.panel}>
+                <SellingPanel />
+              </div>
             </main>
             <ImportExportBar />
           </div>
