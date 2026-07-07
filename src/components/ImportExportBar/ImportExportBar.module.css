@@ -1,0 +1,25 @@
+.bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 20px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  justify-content: center;
+}
+
+.btn {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.btn:hover { background: var(--color-bg); }
+
+.btnDanger {
+  composes: btn;
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}

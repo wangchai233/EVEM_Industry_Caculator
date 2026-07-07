@@ -1,0 +1,28 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  gap: var(--gap);
+  padding: var(--gap);
+  overflow: auto;
+}
+
+.panel {
+  flex: 1;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .main {
+    flex-direction: column;
+  }
+}
