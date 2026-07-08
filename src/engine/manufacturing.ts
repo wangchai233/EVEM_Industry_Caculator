@@ -1,81 +1,83 @@
-import type { ManufacturingConfig, Blueprint, Decoder, ProductionResult, MaterialEntry } from '../types';
+import type { ManufacturingConfig, Blueprint, ProductionResult } from '../types';
+import type { BonusLayers } from '../types/bonus';
+import type { Decoder } from '../types/blueprint';
+import { EMPTY_BONUS } from '../types/bonus';
 import { getItemById } from '../data';
 
 type PriceGetter = (itemId: string) => number | null;
+type DiscountGetter = (itemId: string) => number | null; // 返回折扣率（如 0.8 = 8折）
 
 export function calculateManufacturing(
   config: ManufacturingConfig,
   bp: Blueprint,
   decoder: Decoder | undefined,
-  getPrice: PriceGetter
+  getPrice: PriceGetter,
+  bonuses: BonusLayers = EMPTY_BONUS,
+  getDiscount?: DiscountGetter,
 ): ProductionResult {
   const materials: ProductionResult['materials'] = [];
   let totalMaterialCost: number | null = 0;
+
+  // 材料效率 = 1.5 + 技能 + 设施 + 解码器
+  const finalME = 1.5 + bonuses.skills.materialEfficiency + bonuses.facilities.materialEfficiency + bonuses.decoder.materialEfficiency;
+
   const effRuns = config.runs + (decoder?.runBonus ?? 0);
 
-  const processMaterial = (entry: MaterialEntry, isBase: boolean) => {
-    const item = getItemById(entry.itemId);
-    const baseQty = entry.quantity;
-    const adjustedQty = isBase ? baseQty : baseQty * config.materialEfficiency;
+  const processMaterial = (itemId: string, baseQty: number, isBase: boolean) => {
+    const item = getItemById(itemId);
+    const adjustedQty = isBase ? baseQty : baseQty * finalME;
     const totalQty = adjustedQty * config.runs;
-    const unitPrice = getPrice(entry.itemId);
+    const rawPrice = getPrice(itemId);
+    const discount = getDiscount?.(itemId);
+    const unitPrice = rawPrice !== null && discount !== null ? rawPrice * discount : rawPrice;
     const subtotal = unitPrice !== null ? totalQty * unitPrice : null;
 
     if (subtotal === null) totalMaterialCost = null;
     else if (totalMaterialCost !== null) totalMaterialCost += subtotal;
 
     materials.push({
-      itemId: entry.itemId,
-      itemName: item?.name ?? entry.itemId,
+      itemId, itemName: item?.name ?? itemId,
       category: item?.category ?? 'mineral',
-      baseQuantity: baseQty,
-      adjustedQuantity: adjustedQty,
-      totalQuantity: totalQty,
-      unitPrice,
-      subtotal,
+      baseQuantity: baseQty, adjustedQuantity: adjustedQty,
+      totalQuantity: totalQty, unitPrice, subtotal,
       isBaseMaterial: isBase,
     });
   };
 
-  processMaterial({ itemId: bp.id, quantity: 1 }, true);
+  // 蓝图（基底）
+  processMaterial(bp.id, 1, true);
 
-  if (decoder && decoder.id !== 'decoder_none') {
+  // 解码器（基底）
+  if (decoder) {
     const decPrice = getPrice(decoder.id);
-    const decQty = config.runs;
-    const decSubtotal = decPrice !== null ? decPrice * decQty : null;
+    const decSubtotal = decPrice !== null ? decPrice * config.runs : null;
     if (decSubtotal === null) totalMaterialCost = null;
     else if (totalMaterialCost !== null) totalMaterialCost += decSubtotal;
     materials.push({
-      itemId: decoder.id,
-      itemName: decoder.name,
-      category: 'decoder',
-      baseQuantity: 1,
-      adjustedQuantity: 1,
-      totalQuantity: decQty,
-      unitPrice: decPrice,
-      subtotal: decSubtotal,
-      isBaseMaterial: true,
+      itemId: decoder.id, itemName: decoder.name, category: 'decoder',
+      baseQuantity: 1, adjustedQuantity: 1, totalQuantity: config.runs,
+      unitPrice: decPrice, subtotal: decSubtotal, isBaseMaterial: true,
     });
   }
 
-  for (const entry of bp.materials) {
-    processMaterial(entry, false);
+  // 普通材料
+  for (const m of bp.materials) {
+    processMaterial(m.itemId, m.quantity, false);
   }
 
-  const cashCost = bp.baseCost * config.runs;
-  const totalTime = bp.baseTime * config.timeEfficiency * (decoder?.teBonus ?? 1.0);
-  const productCount = bp.productQuantity * effRuns;
+  // 时间 = 基础 × (1+技能) × (1+设施) × (1+解码器)，乘法
+  const finalTime = bp.baseTime
+    * (1 + bonuses.skills.timeEfficiency)
+    * (1 + bonuses.facilities.timeEfficiency)
+    * (1 + bonuses.decoder.timeEfficiency);
 
+  // 现金费用 = 基础 × (1+技能) × 流程数
+  const baseCash = bp.baseCost * (1 + bonuses.skills.costMultiplier + bonuses.facilities.costMultiplier);
+  const cashCost = baseCash * config.runs;
+
+  const productCount = bp.productQuantity * effRuns;
   const totalCost = totalMaterialCost !== null ? totalMaterialCost + cashCost : null;
   const costPerUnit = totalCost !== null ? totalCost / productCount : null;
 
-  return {
-    materials,
-    totalMaterialCost,
-    cashCost,
-    totalTime,
-    productCount,
-    totalCost,
-    costPerUnit,
-  };
+  return { materials, totalMaterialCost, cashCost, totalTime: finalTime, productCount, totalCost, costPerUnit };
 }
