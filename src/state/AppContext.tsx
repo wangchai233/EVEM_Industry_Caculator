@@ -1,6 +1,6 @@
 import { createContext, useContext, useCallback, type ReactNode } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import type { PriceConfig, SkillLevels, CustomFacilityBonus, DiscountRule } from '../types';
+import type { PriceConfig, SkillLevels, CustomFacilityBonus, DiscountRule, ProductTreeNode, Blueprint, ReverseEngineeringData } from '../types';
 import { defaultItems, allItems, defaultBlueprints, defaultReverse, defaultDecoders } from '../data';
 import { defaultSkills, defaultSkillLevels } from '../data/skills';
 
@@ -8,8 +8,9 @@ interface AppState {
   priceConfigs: PriceConfig[];
   activeConfigId: string;
   customItems: typeof defaultItems;
-  customBlueprints: typeof defaultBlueprints;
-  customReverse: typeof defaultReverse;
+  customBlueprints: Blueprint[];
+  customReverse: ReverseEngineeringData[];
+  customTreeNodes: ProductTreeNode[];
   customDecoders: typeof defaultDecoders;
   skillLevels: SkillLevels;
   activeFacilityId: string;
@@ -45,6 +46,15 @@ interface AppContextType extends AppState {
   // 全局效率覆盖
   globalOverrides: { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number };
   setGlobalOverrides: (v: { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number } | ((prev: { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number }) => { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number })) => void;
+  // 自定义蓝图的 CRUD
+  addCustomBlueprint: (bp: Blueprint) => void;
+  updateCustomBlueprint: (id: string, patch: Partial<Blueprint>) => void;
+  deleteCustomBlueprint: (id: string) => void;
+  // 自定义逆向配置的 CRUD
+  addCustomReverse: (rev: ReverseEngineeringData) => void;
+  updateCustomReverse: (id: string, patch: Partial<ReverseEngineeringData>) => void;
+  deleteCustomReverse: (id: string) => void;
+  setCustomTreeNodes: (nodes: ProductTreeNode[] | ((prev: ProductTreeNode[]) => ProductTreeNode[])) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -76,6 +86,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [discountRules, setDiscountRules] = useLocalStorage<DiscountRule[]>('evem_discount_rules', []);
   // 材料折扣覆写（每物品手动折扣率）
   const [materialDiscounts, setMaterialDiscounts] = useLocalStorage<Record<string, number>>('evem_material_discounts', {});
+
+  // 自定义产品
+  const [customBlueprints, setCustomBlueprints] = useLocalStorage<Blueprint[]>('evem_custom_blueprints', []);
+  const [customReverse, setCustomReverse] = useLocalStorage<ReverseEngineeringData[]>('evem_custom_reverse', []);
+  const [customTreeNodes, setCustomTreeNodes] = useLocalStorage<ProductTreeNode[]>('evem_custom_tree_nodes', []);
+
+  // 自定义蓝图 CRUD
+  const addCustomBlueprint = useCallback((bp: Blueprint) => {
+    setCustomBlueprints(prev => [...prev, { ...bp, isCustom: true }]);
+  }, [setCustomBlueprints]);
+
+  const updateCustomBlueprint = useCallback((id: string, patch: Partial<Blueprint>) => {
+    setCustomBlueprints(prev => prev.map(b => b.id === id ? { ...b, ...patch } : b));
+  }, [setCustomBlueprints]);
+
+  const deleteCustomBlueprint = useCallback((id: string) => {
+    setCustomBlueprints(prev => prev.filter(b => b.id !== id));
+  }, [setCustomBlueprints]);
+
+  // 自定义逆向配置 CRUD
+  const addCustomReverse = useCallback((rev: ReverseEngineeringData) => {
+    setCustomReverse(prev => [...prev, { ...rev, isCustom: true }]);
+  }, [setCustomReverse]);
+
+  const updateCustomReverse = useCallback((id: string, patch: Partial<ReverseEngineeringData>) => {
+    setCustomReverse(prev => prev.map(r => r.id === id ? { ...r, ...patch } : r));
+  }, [setCustomReverse]);
+
+  const deleteCustomReverse = useCallback((id: string) => {
+    setCustomReverse(prev => prev.filter(r => r.id !== id));
+  }, [setCustomReverse]);
 
   const activeConfig = configs.find(c => c.id === activeId) ?? configs[0];
 
@@ -124,12 +165,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     reverse: defaultReverse,
     decoders: defaultDecoders,
     priceConfigs: configs,
-  }), [configs]);
+    customBlueprints,
+    customReverse,
+    customTreeNodes,
+  }), [configs, customBlueprints, customReverse, customTreeNodes]);
 
   const importData = useCallback((data: any) => {
     if (data?.priceConfigs) setConfigs(data.priceConfigs);
     if (data?.activeConfigId) setActiveId(data.activeConfigId);
-  }, [setConfigs, setActiveId]);
+    if (data?.customBlueprints) setCustomBlueprints(data.customBlueprints);
+    if (data?.customReverse) setCustomReverse(data.customReverse);
+    if (data?.customTreeNodes) setCustomTreeNodes(data.customTreeNodes);
+  }, [setConfigs, setActiveId, setCustomBlueprints, setCustomReverse, setCustomTreeNodes]);
 
   // 批量设置技能等级
   const batchSetSkillLevels = useCallback((preset: string) => {
@@ -213,8 +260,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{
       priceConfigs: configs, activeConfigId: activeId,
-      customItems: defaultItems, customBlueprints: defaultBlueprints,
-      customReverse: defaultReverse, customDecoders: defaultDecoders,
+      customItems: defaultItems, customBlueprints,
+      customReverse, customTreeNodes, customDecoders: defaultDecoders,
       getPrice, setPrice, createPriceConfig, deletePriceConfig,
       renamePriceConfig, switchConfig, getAllData, importData,
       // 技能
@@ -227,6 +274,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       materialDiscounts, setMaterialDiscount, clearMaterialDiscount,
       // 全局效率覆盖
       globalOverrides, setGlobalOverrides,
+      // 自定义蓝图 CRUD
+      addCustomBlueprint, updateCustomBlueprint, deleteCustomBlueprint,
+      // 自定义逆向配置 CRUD
+      addCustomReverse, updateCustomReverse, deleteCustomReverse,
+      setCustomTreeNodes,
     }}>
       {children}
     </AppContext.Provider>
