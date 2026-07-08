@@ -131,8 +131,7 @@ export function ProductionSummary() {
             </div>
           )}
         </div>
-        );
-      })}
+      )}
 
       <button className={styles.sendBtn} onClick={handleSendToSelling} disabled={!state.result}>
         发送到出售 →
