@@ -1,7 +1,6 @@
 import { createContext, useContext, useCallback, type ReactNode } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import type { PriceConfig, SkillLevels, CustomFacilityBonus, DiscountRule } from '../types';
-import { EMPTY_BONUS } from '../types/bonus';
 import { defaultItems, allItems, defaultBlueprints, defaultReverse, defaultDecoders } from '../data';
 import { defaultSkills, defaultSkillLevels } from '../data/skills';
 

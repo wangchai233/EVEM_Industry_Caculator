@@ -1,5 +1,3 @@
-import type { Item } from './item';
-
 export interface Blueprint {
   id: string;
   name: string;

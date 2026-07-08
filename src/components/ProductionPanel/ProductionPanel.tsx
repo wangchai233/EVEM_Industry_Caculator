@@ -6,7 +6,6 @@ import { defaultSkills } from '../../data/skills';
 import { calculateManufacturing } from '../../engine/manufacturing';
 import { calculateReverse } from '../../engine/reverse';
 import { resolveBonuses } from '../../engine/resolver';
-import { EMPTY_BONUS } from '../../types/bonus';
 import { ProjectTypeTabs } from './ProjectTypeTabs';
 import { ProductSelector } from './ProductSelector';
 import { EfficiencyConfig } from './EfficiencyConfig';
@@ -29,7 +28,8 @@ export function ProductionPanel() {
         : undefined;
       const productTags = bp.tags;
       const bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
-      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPrice, bonuses, getDiscount);
+      const discountWrapper = (itemId: string) => getDiscount(itemId, 'buy');
+      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPrice, bonuses, discountWrapper);
       dispatch({ type: 'SET_RESULT', payload: result });
     } else {
       const rev = getReverseById(state.reverse.reverseId);

@@ -29,7 +29,7 @@ export function calculateManufacturing(
     const totalQty = adjustedQty * config.runs;
     const rawPrice = getPrice(itemId);
     const discount = getDiscount?.(itemId);
-    const unitPrice = rawPrice !== null && discount !== null ? rawPrice * discount : rawPrice;
+    const unitPrice = rawPrice !== null ? rawPrice * (discount ?? 1) : rawPrice;
     const subtotal = unitPrice !== null ? totalQty * unitPrice : null;
 
     if (subtotal === null) totalMaterialCost = null;
