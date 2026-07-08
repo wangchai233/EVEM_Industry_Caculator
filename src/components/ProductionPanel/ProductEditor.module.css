@@ -1,0 +1,160 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.header h4 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.field label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.field input {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  font-size: 13px;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.row .field {
+  flex: 1;
+}
+
+.materials {
+  margin-top: 8px;
+}
+
+.materials > label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.group {
+  margin: 6px 0;
+  padding: 6px;
+  background: var(--color-bg);
+  border-radius: var(--radius);
+}
+
+.groupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.groupHeader button {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin: 2px 0;
+  padding-left: 12px;
+  color: var(--color-text);
+}
+
+.item button {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.addItemBtn,
+.addGroupBtn {
+  color: var(--color-success);
+  cursor: pointer;
+  font-size: 12px;
+  background: none;
+  border: none;
+  margin-top: 4px;
+  padding: 2px 0;
+}
+
+.addItemBtn:hover,
+.addGroupBtn:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.saveBtn {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 6px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.saveBtn:hover {
+  opacity: 0.9;
+}

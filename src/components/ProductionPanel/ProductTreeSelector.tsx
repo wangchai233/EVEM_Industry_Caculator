@@ -6,6 +6,10 @@ import { defaultBlueprints, defaultReverse } from '../../data';
 import type { ProductTreeNode } from '../../types/productTree';
 import styles from './ProductTreeSelector.module.css';
 
+interface Props {
+  onOpenEditor?: () => void;
+}
+
 interface TreeNodeWithChildren extends ProductTreeNode {
   children: TreeNodeWithChildren[];
   depth: number;
@@ -33,12 +37,11 @@ function matchSearch(node: TreeNodeWithChildren, query: string): boolean {
   return node.children.some(c => matchSearch(c, query));
 }
 
-export function ProductTreeSelector() {
+export function ProductTreeSelector({ onOpenEditor }: Props) {
   const { state, dispatch } = useProduction();
   const { customBlueprints, customReverse, customTreeNodes } = useApp();
   const [search, setSearch] = useState('');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [editorOpen, setEditorOpen] = useState(false);
 
   const allNodes = useMemo(() => {
     // 将自定义产品挂到自定义分类节点下
@@ -146,7 +149,7 @@ export function ProductTreeSelector() {
               <div
                 className={styles.addBtn}
                 style={{ paddingLeft: (node.depth + 1) * 16 }}
-                onClick={() => setEditorOpen(true)}
+                onClick={() => onOpenEditor?.()}
               >
                 + 新建产品
               </div>

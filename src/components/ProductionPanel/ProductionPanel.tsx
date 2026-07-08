@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useProduction } from '../../state/ProductionContext';
 import { useApp } from '../../state/AppContext';
 import { getBlueprintById, getReverseById, getDecoderById } from '../../data';
@@ -8,6 +8,7 @@ import { calculateReverse } from '../../engine/reverse';
 import { resolveBonuses } from '../../engine/resolver';
 import { ProjectTypeTabs } from './ProjectTypeTabs';
 import { ProductTreeSelector } from './ProductTreeSelector';
+import { ProductEditor } from './ProductEditor';
 import { EfficiencyConfig } from './EfficiencyConfig';
 import { DecoderSelector } from './DecoderSelector';
 import { MaterialList } from './MaterialList';
@@ -18,6 +19,9 @@ import styles from './ProductionPanel.module.css';
 export function ProductionPanel() {
   const { state, dispatch } = useProduction();
   const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides } = useApp();
+
+  const [editorOpen, setEditorOpen] = useState(false);
+  const handleCloseEditor = () => setEditorOpen(false);
 
   useEffect(() => {
     if (state.projectType === 'manufacturing') {
@@ -75,12 +79,18 @@ export function ProductionPanel() {
   return (
     <div className={styles.panel}>
       <ProjectTypeTabs />
-      <ProductTreeSelector />
+      <ProductTreeSelector onOpenEditor={() => setEditorOpen(true)} />
       <EfficiencyConfig />
       <DecoderSelector />
       {state.projectType === 'reverse' && <ReverseExtras />}
       <MaterialList />
       <ProductionSummary />
+      {editorOpen && (
+        <ProductEditor
+          mode={state.projectType === 'manufacturing' ? 'mfg' : 'rev'}
+          onClose={handleCloseEditor}
+        />
+      )}
     </div>
   );
 }
