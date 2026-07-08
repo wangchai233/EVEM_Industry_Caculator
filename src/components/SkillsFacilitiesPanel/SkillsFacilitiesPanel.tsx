@@ -219,8 +219,8 @@ export function SkillsFacilitiesPanel() {
                   </div>
                 ))}
               </details>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </div>
