@@ -114,11 +114,27 @@ export function ProductionSummary() {
             <span className={styles.summaryLabel}>产物数量</span>
             <span className={styles.summaryValue}>{formatNumber(state.result.productCount)}</span>
           </div>
-          {'successRate' in state.result && (
+          {state.result.finalMaterialEfficiency !== undefined && (
             <div className={styles.summaryItem}>
-              <span className={styles.summaryLabel}>成功率</span>
+              <span className={styles.summaryLabel}>最终材料效率</span>
               <span className={styles.summaryValue}>
-                {((state.result.successRate ?? 0) * 100).toFixed(1)}%
+                {(state.result.finalMaterialEfficiency * 100).toFixed(0)}%
+              </span>
+            </div>
+          )}
+          {state.result.finalTimeMultiplier !== undefined && (
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>最终时间倍率</span>
+              <span className={styles.summaryValue}>
+                {(state.result.finalTimeMultiplier * 100).toFixed(0)}%
+              </span>
+            </div>
+          )}
+          {state.result.finalSuccessRate !== undefined && (
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>最终成功率</span>
+              <span className={styles.summaryValue}>
+                {(state.result.finalSuccessRate * 100).toFixed(1)}%
               </span>
             </div>
           )}

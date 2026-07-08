@@ -37,17 +37,38 @@ function computeBonusSummary(
   for (const def of defaultSkills) {
     const levels = skillLevels[def.id] ?? [0, 0, 0];
     const accum: Record<string, number> = {};
-    const tiers = [def.base, def.advanced, def.expert] as const;
-    for (let tier = 0; tier < 3; tier++) {
-      const lv = levels[tier];
-      if (lv > 0) {
-        const eff = tiers[tier].effects[lv - 1];
+
+    // ME / SR / costMultiplier 加法叠加
+    const addEffects = (tier: typeof def.base, level: number) => {
+      if (level > 0 && level <= tier.effects.length) {
+        const eff = tier.effects[level - 1];
         for (const [key, val] of Object.entries(eff)) {
+          if (key === 'timeEfficiency') continue; // TE 单独乘法处理
           accum[key] = (accum[key] ?? 0) + val;
           (skills as any)[key] = ((skills as any)[key] ?? 0) + val;
         }
       }
+    };
+
+    // TE 三阶段乘法叠加
+    let teBase = 1, teAdv = 1, teExp = 1;
+    if (levels[0] > 0 && levels[0] <= def.base.effects.length)
+      teBase = 1 + (def.base.effects[levels[0] - 1].timeEfficiency ?? 0);
+    if (levels[1] > 0 && levels[1] <= def.advanced.effects.length)
+      teAdv = 1 + (def.advanced.effects[levels[1] - 1].timeEfficiency ?? 0);
+    if (levels[2] > 0 && levels[2] <= def.expert.effects.length)
+      teExp = 1 + (def.expert.effects[levels[2] - 1].timeEfficiency ?? 0);
+
+    const skillTE = teBase * teAdv * teExp - 1;
+    if (skillTE !== 0) {
+      skills.timeEfficiency += skillTE;
+      accum['timeEfficiency'] = skillTE;
     }
+
+    addEffects(def.base, levels[0]);
+    addEffects(def.advanced, levels[1]);
+    addEffects(def.expert, levels[2]);
+
     if (Object.keys(accum).length > 0) {
       skills.breakdown.push({ skillName: def.name, effects: accum });
     }
@@ -209,7 +230,7 @@ export function SkillsFacilitiesPanel() {
                   设施 {formatPercent(bonus.facilities.timeEfficiency)}
                 </span>
                 <span className={styles.summaryTotal}>
-                  合计 {formatPercent(bonus.skills.timeEfficiency + bonus.facilities.timeEfficiency)}
+                  合计 {formatPercent((1 + bonus.skills.timeEfficiency) * (1 + bonus.facilities.timeEfficiency) - 1)}
                 </span>
               </div>
               <div className={styles.summaryRow}>

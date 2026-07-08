@@ -16,6 +16,9 @@ export interface ProductionResult {
   productCount: number; // 总产物数量
   totalCost: number | null;
   costPerUnit: number | null;
+  finalMaterialEfficiency?: number; // 最终材料效率（1.15 = 115%）
+  finalTimeMultiplier?: number;     // 最终时间倍率（0.45 = 45%）
+  finalSuccessRate?: number;        // 最终成功率（0.55 = 55%，仅逆向）
 }
 
 export interface SellingResult {

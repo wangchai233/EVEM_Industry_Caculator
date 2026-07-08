@@ -79,5 +79,9 @@ export function calculateManufacturing(
   const totalCost = totalMaterialCost !== null ? totalMaterialCost + cashCost : null;
   const costPerUnit = totalCost !== null ? totalCost / productCount : null;
 
-  return { materials, totalMaterialCost, cashCost, totalTime: finalTime, productCount, totalCost, costPerUnit };
+  return {
+    materials, totalMaterialCost, cashCost, totalTime: finalTime, productCount, totalCost, costPerUnit,
+    finalMaterialEfficiency: finalME,
+    finalTimeMultiplier: finalTime / bp.baseTime,
+  };
 }

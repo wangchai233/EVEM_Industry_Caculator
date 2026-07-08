@@ -105,5 +105,7 @@ export function calculateReverse(
     costPerUnit: expectedCost,
     successRate,
     expectedCost,
+    finalTimeMultiplier: finalTime / revData.baseTime,
+    finalSuccessRate: successRate,
   };
 }
