@@ -24,6 +24,32 @@ export function MarketSellConfig() {
       </div>
 
       <div className={styles.row}>
+        <label className={styles.label}>出售折扣</label>
+        <div className={styles.effRow}>
+          <input
+            className={styles.inputSmall}
+            type="number"
+            min="1"
+            max="100"
+            placeholder="原价"
+            value={state.discountOverride !== null ? Math.round(state.discountOverride * 100) : ''}
+            onChange={e => {
+              const v = e.target.value;
+              if (v === '') {
+                dispatch({ type: 'SET_DISCOUNT_OVERRIDE', payload: null });
+              } else {
+                const pct = parseInt(v);
+                if (!isNaN(pct) && pct > 0 && pct <= 100) {
+                  dispatch({ type: 'SET_DISCOUNT_OVERRIDE', payload: pct / 100 });
+                }
+              }
+            }}
+          />
+          <span>%</span>
+        </div>
+      </div>
+
+      <div className={styles.row}>
         <label className={styles.label}>销售税率</label>
         <div className={styles.effRow}>
           <select

@@ -2,8 +2,11 @@ import { useEffect } from 'react';
 import { useProduction } from '../../state/ProductionContext';
 import { useApp } from '../../state/AppContext';
 import { getBlueprintById, getReverseById, getDecoderById } from '../../data';
+import { defaultSkills } from '../../data/skills';
 import { calculateManufacturing } from '../../engine/manufacturing';
 import { calculateReverse } from '../../engine/reverse';
+import { resolveBonuses } from '../../engine/resolver';
+import { EMPTY_BONUS } from '../../types/bonus';
 import { ProjectTypeTabs } from './ProjectTypeTabs';
 import { ProductSelector } from './ProductSelector';
 import { EfficiencyConfig } from './EfficiencyConfig';
@@ -15,23 +18,31 @@ import styles from './ProductionPanel.module.css';
 
 export function ProductionPanel() {
   const { state, dispatch } = useProduction();
-  const { getPrice } = useApp();
+  const { getPrice, skillLevels, customFacility, getDiscount } = useApp();
 
   useEffect(() => {
     if (state.projectType === 'manufacturing') {
       const bp = getBlueprintById(state.manufacturing.blueprintId);
       if (!bp) { dispatch({ type: 'SET_RESULT', payload: null }); return; }
-      const decoder = getDecoderById(state.manufacturing.decoderId ?? 'decoder_none');
-      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPrice);
+      const decoder = state.manufacturing.decoderId
+        ? getDecoderById(state.manufacturing.decoderId)
+        : undefined;
+      const productTags = bp.tags;
+      const bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPrice, bonuses, getDiscount);
       dispatch({ type: 'SET_RESULT', payload: result });
     } else {
       const rev = getReverseById(state.reverse.reverseId);
       if (!rev) { dispatch({ type: 'SET_RESULT', payload: null }); return; }
-      const decoder = getDecoderById(state.reverse.decoderId ?? 'decoder_none');
-      const result = calculateReverse(state.reverse, rev, decoder, getPrice);
+      const decoder = state.reverse.decoderId
+        ? getDecoderById(state.reverse.decoderId)
+        : undefined;
+      const productTags = rev.tags;
+      const bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+      const result = calculateReverse(state.reverse, rev, decoder, getPrice, bonuses);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch]);
+  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount]);
 
   return (
     <div className={styles.panel}>

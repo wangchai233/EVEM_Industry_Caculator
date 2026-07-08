@@ -15,14 +15,16 @@ export function SellingPanel() {
       dispatch({ type: 'SET_RESULT', payload: null });
       return;
     }
-    if (state.config.mode === 'market' && state.config.sellPrice > 0) {
-      const result = calculateMarketSelling(state.config, state.costData);
+    const effectiveSellPrice = state.config.sellPrice * (state.discountOverride ?? 1.0);
+    const effectiveConfig = { ...state.config, sellPrice: effectiveSellPrice };
+    if (state.config.mode === 'market' && effectiveConfig.sellPrice > 0) {
+      const result = calculateMarketSelling(effectiveConfig as typeof state.config & { sellPrice: number }, state.costData);
       dispatch({ type: 'SET_RESULT', payload: result });
-    } else if (state.config.mode === 'contract' && state.config.sellPrice > 0) {
-      const result = calculateContractSelling(state.config, state.costData);
+    } else if (state.config.mode === 'contract' && effectiveConfig.sellPrice > 0) {
+      const result = calculateContractSelling(effectiveConfig as typeof state.config & { sellPrice: number }, state.costData);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.config, state.costData, dispatch]);
+  }, [state.config, state.costData, state.discountOverride, dispatch]);
 
   return (
     <div className={styles.panel}>

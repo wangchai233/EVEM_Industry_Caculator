@@ -34,10 +34,35 @@ export function ProductionSummary() {
             value={state.manufacturing.runs}
             onChange={e => dispatch({
               type: 'SET_MANUFACTURING',
-              payload: { runs: parseInt(e.target.value) },
+              payload: { runs: parseInt(e.target.value), customRuns: false },
             })}
           />
-          <span>{state.manufacturing.runs}</span>
+          <input
+            type="number"
+            min={1}
+            className={styles.inputSmall}
+            value={state.manufacturing.runs}
+            onChange={e => dispatch({
+              type: 'SET_MANUFACTURING',
+              payload: { runs: parseInt(e.target.value) || 1, customRuns: true },
+            })}
+          />
+        </div>
+      )}
+
+      {state.projectType === 'reverse' && (
+        <div className={styles.summaryRow}>
+          <label>并行流程</label>
+          <input
+            type="number"
+            min={1}
+            className={styles.inputSmall}
+            value={state.reverse.parallelRuns}
+            onChange={e => dispatch({
+              type: 'SET_REVERSE',
+              payload: { parallelRuns: parseInt(e.target.value) || 1 },
+            })}
+          />
         </div>
       )}
 
@@ -79,6 +104,22 @@ export function ProductionSummary() {
             <span className={styles.summaryLabel}>产物数量</span>
             <span className={styles.summaryValue}>{formatNumber(state.result.productCount)}</span>
           </div>
+          {'successRate' in state.result && (
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>成功率</span>
+              <span className={styles.summaryValue}>
+                {(state.result.successRate * 100).toFixed(1)}%
+              </span>
+            </div>
+          )}
+          {'expectedCost' in state.result && state.result.expectedCost !== null && (
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>期望成本</span>
+              <span className={styles.summaryValue}>
+                {formatNumber(state.result.expectedCost)} ISK
+              </span>
+            </div>
+          )}
         </div>
       )}
 

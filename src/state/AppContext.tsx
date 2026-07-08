@@ -39,6 +39,10 @@ interface AppContextType extends AppState {
   addDiscountRule: (rule: Omit<DiscountRule, 'id'>) => void;
   removeDiscountRule: (id: string) => void;
   getDiscount: (itemId: string, scope: 'buy' | 'sell', category?: string) => number | null;
+  // 材料折扣覆写
+  materialDiscounts: Record<string, number>;
+  setMaterialDiscount: (itemId: string, rate: number | null) => void;
+  clearMaterialDiscount: (itemId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -68,6 +72,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // 折扣规则
   const [discountRules, setDiscountRules] = useLocalStorage<DiscountRule[]>('evem_discount_rules', []);
+  // 材料折扣覆写（每物品手动折扣率）
+  const [materialDiscounts, setMaterialDiscounts] = useLocalStorage<Record<string, number>>('evem_material_discounts', {});
 
   const activeConfig = configs.find(c => c.id === activeId) ?? configs[0];
 
@@ -159,13 +165,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // 获取折扣
   const getDiscount = useCallback((itemId: string, scope: 'buy' | 'sell', category?: string): number | null => {
+    // 三层优先级：手动覆写 > 材料清单 > 全局
+    if (scope === 'buy' && materialDiscounts[itemId] !== undefined) return materialDiscounts[itemId];
     for (const rule of discountRules) {
       if (rule.scope !== scope) continue;
       if (rule.type === 'item' && rule.targetId === itemId) return rule.rate;
       if (rule.type === 'category' && rule.targetId === category) return rule.rate;
     }
     return null;
-  }, [discountRules]);
+  }, [discountRules, materialDiscounts]);
+
+  // 材料折扣覆写
+  const setMaterialDiscount = useCallback((itemId: string, rate: number | null) => {
+    setMaterialDiscounts(prev => {
+      if (rate === null) {
+        const next = { ...prev };
+        delete next[itemId];
+        return next;
+      }
+      return { ...prev, [itemId]: rate };
+    });
+  }, [setMaterialDiscounts]);
+
+  const clearMaterialDiscount = useCallback((itemId: string) => {
+    setMaterialDiscounts(prev => {
+      const next = { ...prev };
+      delete next[itemId];
+      return next;
+    });
+  }, [setMaterialDiscounts]);
 
   return (
     <AppContext.Provider value={{
@@ -180,6 +208,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       activeFacilityId, setActiveFacilityId, customFacility, setCustomFacility,
       // 折扣
       discountRules, setDiscountRules, addDiscountRule, removeDiscountRule, getDiscount,
+      // 材料折扣覆写
+      materialDiscounts, setMaterialDiscount, clearMaterialDiscount,
     }}>
       {children}
     </AppContext.Provider>

@@ -5,7 +5,7 @@ import styles from './ProductionPanel.module.css';
 
 export function MaterialList() {
   const { state } = useProduction();
-  const { setPrice } = useApp();
+  const { setPrice, materialDiscounts, setMaterialDiscount } = useApp();
 
   if (!state.result) return null;
 
@@ -40,35 +40,61 @@ export function MaterialList() {
                 <th>修正</th>
                 <th>总数</th>
                 <th>单价</th>
+                <th>折扣</th>
                 <th>小计</th>
               </tr>
             </thead>
             <tbody>
-              {items.map(m => (
-                <tr key={m.itemId} className={m.unitPrice === null ? styles.warning : ''}>
-                  <td>
-                    {m.itemName}
-                    {m.isBaseMaterial && <span className={styles.tag}>基底</span>}
-                  </td>
-                  <td>{formatNumber(m.baseQuantity)}</td>
-                  <td>{formatNumber(m.adjustedQuantity)}</td>
-                  <td>{formatNumber(m.totalQuantity)}</td>
-                  <td>
-                    <input
-                      className={styles.priceInput}
-                      type="number"
-                      min="0"
-                      placeholder="未设置"
-                      value={m.unitPrice ?? ''}
-                      onChange={e => {
-                        const v = parseFloat(e.target.value);
-                        if (!isNaN(v)) setPrice(m.itemId, v);
-                      }}
-                    />
-                  </td>
-                  <td>{m.subtotal !== null ? formatNumber(m.subtotal) : '—'}</td>
-                </tr>
-              ))}
+              {items.map(m => {
+                const rowDiscount = materialDiscounts[m.itemId];
+                return (
+                  <tr key={m.itemId} className={m.unitPrice === null ? styles.warning : ''}>
+                    <td>
+                      {m.itemName}
+                      {m.isBaseMaterial && <span className={styles.tag}>基底</span>}
+                    </td>
+                    <td>{formatNumber(m.baseQuantity)}</td>
+                    <td>{formatNumber(m.adjustedQuantity)}</td>
+                    <td>{formatNumber(m.totalQuantity)}</td>
+                    <td>
+                      <input
+                        className={styles.priceInput}
+                        type="number"
+                        min="0"
+                        placeholder="未设置"
+                        value={m.unitPrice ?? ''}
+                        onChange={e => {
+                          const v = parseFloat(e.target.value);
+                          if (!isNaN(v)) setPrice(m.itemId, v);
+                        }}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className={styles.priceInput}
+                        type="number"
+                        min="1"
+                        max="100"
+                        placeholder="全局"
+                        value={rowDiscount !== undefined ? Math.round(rowDiscount * 100) : ''}
+                        onChange={e => {
+                          const v = e.target.value;
+                          if (v === '') {
+                            setMaterialDiscount(m.itemId, null);
+                          } else {
+                            const pct = parseInt(v);
+                            if (!isNaN(pct) && pct > 0 && pct <= 100) {
+                              setMaterialDiscount(m.itemId, pct / 100);
+                            }
+                          }
+                        }}
+                      />
+                      <span style={{ fontSize: '10px' }}>%</span>
+                    </td>
+                    <td>{m.subtotal !== null ? formatNumber(m.subtotal) : '—'}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
