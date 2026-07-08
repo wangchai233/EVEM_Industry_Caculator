@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useProduction } from '../../state/ProductionContext';
 import { useApp } from '../../state/AppContext';
 import { defaultTree, mergeCustomTree } from '../../data/productTree';
@@ -116,7 +116,7 @@ export function ProductTreeSelector({ onOpenEditor }: Props) {
   const handleSelectItem = state.projectType === 'manufacturing' ? handleSelectProduct : handleSelectReverse;
   const idField = state.projectType === 'manufacturing' ? 'productIds' : 'reverseIds' as const;
 
-  function renderNode(node: TreeNodeWithChildren): JSX.Element {
+  function renderNode(node: TreeNodeWithChildren): React.JSX.Element {
     const isExpanded = visibleExpanded.has(node.id);
     const hasChildren = node.children.length > 0;
     const productList = items.filter(b => (node as any)[idField]?.includes(b.id));

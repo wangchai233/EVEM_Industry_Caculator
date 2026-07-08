@@ -15,7 +15,7 @@ interface Props {
   onClose: () => void;
 }
 
-function getDefaultGroups(mode: 'mfg'): MaterialGroup[] {
+function getDefaultGroups(mode: 'mfg' | 'rev'): MaterialGroup[] {
   return mode === 'mfg'
     ? [{ category: '矿物', items: [] }, { category: '行星材料', items: [] }]
     : [{ category: '数据核心', items: [] }];
