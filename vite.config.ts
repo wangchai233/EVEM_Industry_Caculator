@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/evem-industry-calc/',
+  base: '/EVEM_Industry_Caculator/',
 })
