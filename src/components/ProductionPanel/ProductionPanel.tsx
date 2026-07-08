@@ -7,7 +7,7 @@ import { calculateManufacturing } from '../../engine/manufacturing';
 import { calculateReverse } from '../../engine/reverse';
 import { resolveBonuses } from '../../engine/resolver';
 import { ProjectTypeTabs } from './ProjectTypeTabs';
-import { ProductSelector } from './ProductSelector';
+import { ProductTreeSelector } from './ProductTreeSelector';
 import { EfficiencyConfig } from './EfficiencyConfig';
 import { DecoderSelector } from './DecoderSelector';
 import { MaterialList } from './MaterialList';
@@ -75,7 +75,7 @@ export function ProductionPanel() {
   return (
     <div className={styles.panel}>
       <ProjectTypeTabs />
-      <ProductSelector />
+      <ProductTreeSelector />
       <EfficiencyConfig />
       <DecoderSelector />
       {state.projectType === 'reverse' && <ReverseExtras />}
