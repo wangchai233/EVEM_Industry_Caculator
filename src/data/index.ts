@@ -28,3 +28,5 @@ export function getDecoderById(id: string): Decoder | undefined {
 
 export { defaultItems, defaultDecoders, defaultBlueprints, blueprintProducts, defaultReverse, allItems };
 export { defaultSkills, defaultSkillLevels, getSkillById } from './skills';
+export { tagTree, resolveTags } from './tags';
+export { defaultFacilities, getFacilityById } from './facilities';
