@@ -205,61 +205,9 @@ export function SkillsFacilitiesPanel() {
             </div>
           </div>
 
-          {/* ── 加成汇总 ── */}
-          <div className={styles.section}>
-            <label className={styles.label}>加成汇总</label>
-            <div className={styles.summaryGrid}>
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>材料效率</span>
-                <span className={styles.summarySkill}>
-                  技能 {formatPercent(bonus.skills.materialEfficiency)}
-                </span>
-                <span className={styles.summaryFacility}>
-                  设施 {formatPercent(bonus.facilities.materialEfficiency)}
-                </span>
-                <span className={styles.summaryTotal}>
-                  合计 {formatPercent(bonus.skills.materialEfficiency + bonus.facilities.materialEfficiency)}
-                </span>
-              </div>
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>时间效率</span>
-                <span className={styles.summarySkill}>
-                  技能 {formatPercent(bonus.skills.timeEfficiency)}
-                </span>
-                <span className={styles.summaryFacility}>
-                  设施 {formatPercent(bonus.facilities.timeEfficiency)}
-                </span>
-                <span className={styles.summaryTotal}>
-                  合计 {formatPercent((1 + bonus.skills.timeEfficiency) * (1 + bonus.facilities.timeEfficiency) - 1)}
-                </span>
-              </div>
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>成功率</span>
-                <span className={styles.summarySkill}>
-                  技能 {formatPercent(bonus.skills.successRate)}
-                </span>
-                <span className={styles.summaryFacility}>
-                  设施 {formatPercent(bonus.facilities.successRate)}
-                </span>
-                <span className={styles.summaryTotal}>
-                  合计 {formatPercent(bonus.skills.successRate + bonus.facilities.successRate)}
-                </span>
-              </div>
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>费用倍率</span>
-                <span className={styles.summarySkill}>
-                  技能 {formatPercent(bonus.skills.costMultiplier)}
-                </span>
-                <span className={styles.summaryFacility}>
-                  设施 {formatPercent(bonus.facilities.costMultiplier)}
-                </span>
-                <span className={styles.summaryTotal}>
-                  合计 {formatPercent(bonus.skills.costMultiplier + bonus.facilities.costMultiplier)}
-                </span>
-              </div>
-            </div>
-
-            {bonus.skills.breakdown.length > 0 && (
+          {/* ── 技能明细 ── */}
+          {bonus.skills.breakdown.length > 0 && (
+            <div className={styles.section}>
               <details className={styles.breakdownDetails}>
                 <summary className={styles.breakdownToggle}>技能明细</summary>
                 {bonus.skills.breakdown.map((item, i) => (
