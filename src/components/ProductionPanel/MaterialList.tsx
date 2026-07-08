@@ -30,7 +30,7 @@ export function MaterialList() {
     <div className={styles.section}>
       <label className={styles.label}>材料清单</label>
       {Object.entries(groupedByCategory).map(([cat, items]) => (
-        <div key={cat}>
+        <div key={cat} style={{ overflowX: 'auto' }}>
           <h4 className={styles.catTitle}>{categoryNames[cat] || cat}</h4>
           <table className={styles.materialTable}>
             <thead>

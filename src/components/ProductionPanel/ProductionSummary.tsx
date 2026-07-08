@@ -66,11 +66,21 @@ export function ProductionSummary() {
         </div>
       )}
 
-      {state.result && (
+      {state.result && (() => {
+        const jobCount = state.projectType === 'manufacturing'
+          ? state.manufacturing.runs
+          : state.reverse.parallelRuns;
+        return (
         <div className={styles.summaryGrid}>
           <div className={styles.summaryItem}>
-            <span className={styles.summaryLabel}>总耗时</span>
+            <span className={styles.summaryLabel}>单流程耗时</span>
             <span className={styles.summaryValue}>{formatTime(state.result.totalTime)}</span>
+          </div>
+          <div className={styles.summaryItem}>
+            <span className={styles.summaryLabel}>最大总耗时</span>
+            <span className={styles.summaryValue}>
+              {formatTime(state.result.totalTime * jobCount)}
+            </span>
           </div>
           <div className={styles.summaryItem}>
             <span className={styles.summaryLabel}>现金费用</span>
@@ -121,7 +131,8 @@ export function ProductionSummary() {
             </div>
           )}
         </div>
-      )}
+        );
+      })}
 
       <button className={styles.sendBtn} onClick={handleSendToSelling} disabled={!state.result}>
         发送到出售 →
