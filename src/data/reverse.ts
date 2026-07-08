@@ -8,12 +8,13 @@ export const defaultReverse: ReverseEngineeringData[] = [
     baseItemId: 'damaged_bs_structure',
     baseItemName: '受损战列舰结构',
     maxItemCount: 5,
-    successRatePerItem: 0.10,
+    maxBaseSuccessRate: 0.50,
     baseTime: 3600,
     baseCost: 1000000,
     dataCores: [
       { itemId: 'data_core_ship', quantity: 10 },
     ],
+    tags: ['ship', 'regular_ship', 'battleship'],
   },
   {
     id: 'rev_t8_cruiser',
@@ -22,11 +23,29 @@ export const defaultReverse: ReverseEngineeringData[] = [
     baseItemId: 'damaged_cr_structure',
     baseItemName: '受损巡洋舰结构',
     maxItemCount: 5,
-    successRatePerItem: 0.10,
+    maxBaseSuccessRate: 0.50,
     baseTime: 1800,
     baseCost: 500000,
     dataCores: [
       { itemId: 'data_core_ship', quantity: 5 },
     ],
+    tags: ['ship', 'regular_ship', 'cruiser'],
+  },
+  // v2 秃鹫级截击型逆向工程
+  {
+    id: 'rev_condor_interceptor',
+    name: '秃鹫级截击型逆向工程',
+    targetBlueprintId: 'bp_condor_interceptor',
+    baseItemId: 'damaged_caldari8',
+    baseItemName: '加达里 8 级受损结构',
+    maxItemCount: 1,
+    maxBaseSuccessRate: 0.50,
+    baseTime: 3200,
+    baseCost: 25000,
+    dataCores: [
+      { itemId: 'data_core_caldari_engineering', quantity: 3 },
+      { itemId: 'data_core_rocket_science', quantity: 3 },
+    ],
+    tags: ['ship', 'regular_ship', 'frigate', 'caldari', 'interceptor'],
   },
 ];

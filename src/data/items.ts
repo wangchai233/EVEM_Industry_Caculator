@@ -1,4 +1,4 @@
-import type { Item, Decoder } from '../types';
+import type { Item } from '../types';
 
 export const defaultItems: Item[] = [
   { id: 'tritanium', name: '三钛合金', category: 'mineral' },
@@ -16,21 +16,13 @@ export const defaultItems: Item[] = [
   { id: 'damaged_bs_structure', name: '受损战列舰结构', category: 'damaged_structure' },
   { id: 'damaged_cr_structure', name: '受损巡洋舰结构', category: 'damaged_structure' },
   { id: 'isk', name: 'ISK（星币）', category: 'isk' },
-];
-
-export const defaultDecoders: Decoder[] = [
-  {
-    id: 'decoder_none', name: '无解码器', category: 'decoder',
-    meBonus: 1.0, teBonus: 1.0, runBonus: 0,
-  },
-  {
-    id: 'decoder_me_1', name: '材料优化解码器 I',
-    category: 'decoder',
-    meBonus: 0.98, teBonus: 1.0, runBonus: 0,
-  },
-  {
-    id: 'decoder_run_1', name: '增产解码器 I',
-    category: 'decoder',
-    meBonus: 1.0, teBonus: 1.0, runBonus: 1,
-  },
+  // v2 新材料物品
+  { id: 'sparkle_alloy', name: '闪光合金', category: 'planetary' },
+  { id: 'precision_alloy', name: '精密合金', category: 'planetary' },
+  { id: 'fiber_composite', name: '纤维复合物', category: 'planetary' },
+  { id: 'reactive_metal', name: '反应金属', category: 'planetary' },
+  { id: 'damaged_caldari8', name: '加达里 8 级受损结构', category: 'damaged_structure' },
+  { id: 'data_core_caldari_engineering', name: '数据核心 - 加达里星舰工程', category: 'data_core' },
+  { id: 'data_core_rocket_science', name: '数据核心 - 火箭科学', category: 'data_core' },
+  { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'product' },
 ];

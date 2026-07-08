@@ -1,0 +1,78 @@
+import type { Decoder } from '../types';
+
+export const defaultDecoders: Decoder[] = [
+  // ======== 制造用解码器 ========
+  {
+    id: 'decoder_mfg_actuarial',
+    name: '生产精算解码器',
+    category: 'mfg',
+    materialEfficiency: -0.05,
+    timeEfficiency: 0.40,
+    runBonus: 0,
+    successRate: 0,
+  },
+  {
+    id: 'decoder_mfg_optimize',
+    name: '生产优化解码器',
+    category: 'mfg',
+    materialEfficiency: -0.02,
+    timeEfficiency: -0.20,
+    runBonus: 0,
+    successRate: 0,
+  },
+  {
+    id: 'decoder_mfg_timing',
+    name: '生产时效解码器',
+    category: 'mfg',
+    materialEfficiency: 0.01,
+    timeEfficiency: -0.40,
+    runBonus: 0,
+    successRate: 0,
+  },
+  {
+    id: 'decoder_mfg_increment',
+    name: '生产增量解码器',
+    category: 'mfg',
+    materialEfficiency: 1.25,
+    timeEfficiency: 0.70,
+    runBonus: 1,
+    successRate: 0,
+  },
+  // ======== 逆向用解码器 ========
+  {
+    id: 'decoder_rev_actuarial',
+    name: '逆向精算解码器',
+    category: 'rev',
+    materialEfficiency: 0,
+    timeEfficiency: 0.40,
+    runBonus: 0,
+    successRate: 0.30,
+  },
+  {
+    id: 'decoder_rev_optimize',
+    name: '逆向优化解码器',
+    category: 'rev',
+    materialEfficiency: 0,
+    timeEfficiency: -0.10,
+    runBonus: 0,
+    successRate: 0.10,
+  },
+  {
+    id: 'decoder_rev_timing',
+    name: '逆向时效解码器',
+    category: 'rev',
+    materialEfficiency: 0,
+    timeEfficiency: -0.40,
+    runBonus: 0,
+    successRate: 0.05,
+  },
+  {
+    id: 'decoder_rev_increment',
+    name: '逆向增量解码器',
+    category: 'rev',
+    materialEfficiency: 0,
+    timeEfficiency: 0.50,
+    runBonus: 1,
+    successRate: -0.50,
+  },
+];

@@ -22,6 +22,7 @@ export const defaultBlueprints: Blueprint[] = [
       { itemId: 'noble_metals', quantity: 300 },
       { itemId: 'precious_alloys', quantity: 200 },
     ],
+    tags: ['ship', 'regular_ship', 'battleship'],
   },
   {
     id: 'bp_t8_cruiser',
@@ -41,10 +42,38 @@ export const defaultBlueprints: Blueprint[] = [
       { itemId: 'reactive_metals', quantity: 200 },
       { itemId: 'noble_metals', quantity: 120 },
     ],
+    tags: ['ship', 'regular_ship', 'cruiser'],
+  },
+  // v2 秃鹫级截击型
+  {
+    id: 'bp_condor_interceptor',
+    name: '秃鹫级截击型蓝图',
+    productItemId: 'condor_interceptor',
+    productName: '秃鹫级截击型',
+    productQuantity: 1,
+    baseTime: 16000,
+    baseCost: 9000000,
+    maxRuns: 10,
+    materials: [
+      { itemId: 'sparkle_alloy', quantity: 6642 },
+      { itemId: 'precision_alloy', quantity: 5898 },
+      { itemId: 'fiber_composite', quantity: 7526 },
+      { itemId: 'noble_metals', quantity: 7526 },
+      { itemId: 'reactive_metal', quantity: 1872 },
+      { itemId: 'tritanium', quantity: 2467871 },
+      { itemId: 'pyerite', quantity: 854016 },
+      { itemId: 'mexallon', quantity: 233964 },
+      { itemId: 'isogen', quantity: 38498 },
+      { itemId: 'nocxium', quantity: 10814 },
+      { itemId: 'zydrine', quantity: 4448 },
+      { itemId: 'megacyte', quantity: 1812 },
+    ],
+    tags: ['ship', 'regular_ship', 'frigate', 'caldari', 'interceptor'],
   },
 ];
 
 export const blueprintProducts: Array<{ id: string; name: string; category: 'product' }> = [
   { id: 't9_battleship', name: 'T9 战列舰', category: 'product' },
   { id: 't8_cruiser', name: 'T8 巡洋舰', category: 'product' },
+  { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'product' },
 ];

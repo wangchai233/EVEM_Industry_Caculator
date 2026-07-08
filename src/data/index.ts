@@ -1,9 +1,10 @@
-import { defaultItems, defaultDecoders } from './items';
+import { defaultItems } from './items';
+import { defaultDecoders } from './decoders';
 import { defaultBlueprints, blueprintProducts } from './blueprints';
 import { defaultReverse } from './reverse';
 import type { Item, Blueprint, Decoder, ReverseEngineeringData } from '../types';
 
-const allItems: Item[] = [...defaultItems, ...defaultDecoders, ...blueprintProducts];
+const allItems: Item[] = [...defaultItems, ...blueprintProducts];
 
 const itemMap = new Map(allItems.map(i => [i.id, i]));
 const bpMap = new Map(defaultBlueprints.map(b => [b.id, b]));
