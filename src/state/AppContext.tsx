@@ -42,6 +42,9 @@ interface AppContextType extends AppState {
   materialDiscounts: Record<string, number>;
   setMaterialDiscount: (itemId: string, rate: number | null) => void;
   clearMaterialDiscount: (itemId: string) => void;
+  // 全局效率覆盖
+  globalOverrides: { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number };
+  setGlobalOverrides: (v: { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number } | ((prev: { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number }) => { enabled: boolean; materialEfficiency: number; timeEfficiency: number; successRate: number })) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -174,6 +177,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return null;
   }, [discountRules, materialDiscounts]);
 
+  // 全局效率覆盖（适合跳过技能设施设置的用户）
+  const [globalOverrides, setGlobalOverrides] = useLocalStorage<{
+    enabled: boolean;
+    materialEfficiency: number;
+    timeEfficiency: number;
+    successRate: number;
+  }>('evem_global_overrides', {
+    enabled: true,
+    materialEfficiency: 1.5,
+    timeEfficiency: 1.0,
+    successRate: 0,
+  });
+
   // 材料折扣覆写
   const setMaterialDiscount = useCallback((itemId: string, rate: number | null) => {
     setMaterialDiscounts(prev => {
@@ -209,6 +225,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       discountRules, setDiscountRules, addDiscountRule, removeDiscountRule, getDiscount,
       // 材料折扣覆写
       materialDiscounts, setMaterialDiscount, clearMaterialDiscount,
+      // 全局效率覆盖
+      globalOverrides, setGlobalOverrides,
     }}>
       {children}
     </AppContext.Provider>

@@ -17,7 +17,7 @@ import styles from './ProductionPanel.module.css';
 
 export function ProductionPanel() {
   const { state, dispatch } = useProduction();
-  const { getPrice, skillLevels, customFacility, getDiscount } = useApp();
+  const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides } = useApp();
 
   useEffect(() => {
     if (state.projectType === 'manufacturing') {
@@ -27,7 +27,21 @@ export function ProductionPanel() {
         ? getDecoderById(state.manufacturing.decoderId)
         : undefined;
       const productTags = bp.tags;
-      const bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+
+      // 全局覆盖
+      if (globalOverrides.enabled) {
+        bonuses.skills.materialEfficiency = globalOverrides.materialEfficiency - 1.5;
+        bonuses.skills.timeEfficiency = globalOverrides.timeEfficiency - 1.0;
+        bonuses.skills.successRate = globalOverrides.successRate;
+        bonuses.facilities.materialEfficiency = 0;
+        bonuses.facilities.timeEfficiency = 0;
+        bonuses.facilities.successRate = 0;
+        bonuses.decoder.materialEfficiency = 0;
+        bonuses.decoder.timeEfficiency = 0;
+        bonuses.decoder.successRate = 0;
+      }
+
       const discountWrapper = (itemId: string) => getDiscount(itemId, 'buy');
       const result = calculateManufacturing(state.manufacturing, bp, decoder, getPrice, bonuses, discountWrapper);
       dispatch({ type: 'SET_RESULT', payload: result });
@@ -38,11 +52,25 @@ export function ProductionPanel() {
         ? getDecoderById(state.reverse.decoderId)
         : undefined;
       const productTags = rev.tags;
-      const bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+
+      // 全局覆盖
+      if (globalOverrides.enabled) {
+        bonuses.skills.materialEfficiency = globalOverrides.materialEfficiency - 1.5;
+        bonuses.skills.timeEfficiency = globalOverrides.timeEfficiency - 1.0;
+        bonuses.skills.successRate = globalOverrides.successRate;
+        bonuses.facilities.materialEfficiency = 0;
+        bonuses.facilities.timeEfficiency = 0;
+        bonuses.facilities.successRate = 0;
+        bonuses.decoder.materialEfficiency = 0;
+        bonuses.decoder.timeEfficiency = 0;
+        bonuses.decoder.successRate = 0;
+      }
+
       const result = calculateReverse(state.reverse, rev, decoder, getPrice, bonuses);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount]);
+  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides]);
 
   return (
     <div className={styles.panel}>

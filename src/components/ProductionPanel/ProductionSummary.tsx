@@ -66,11 +66,7 @@ export function ProductionSummary() {
         </div>
       )}
 
-      {state.result && (() => {
-        const jobCount = state.projectType === 'manufacturing'
-          ? state.manufacturing.runs
-          : state.reverse.parallelRuns;
-        return (
+      {state.result && (
         <div className={styles.summaryGrid}>
           <div className={styles.summaryItem}>
             <span className={styles.summaryLabel}>单流程耗时</span>
@@ -79,7 +75,11 @@ export function ProductionSummary() {
           <div className={styles.summaryItem}>
             <span className={styles.summaryLabel}>最大总耗时</span>
             <span className={styles.summaryValue}>
-              {formatTime(state.result.totalTime * jobCount)}
+              {formatTime(state.result.totalTime * (
+                state.projectType === 'manufacturing'
+                  ? state.manufacturing.runs
+                  : state.reverse.parallelRuns
+              ))}
             </span>
           </div>
           <div className={styles.summaryItem}>
