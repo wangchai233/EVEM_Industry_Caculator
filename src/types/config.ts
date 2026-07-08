@@ -1,14 +1,15 @@
 export interface ManufacturingConfig {
   blueprintId: string;
-  runs: number; // 流程数
-  materialEfficiency: number; // 材料效率（如 1.50 = 150%）
-  timeEfficiency: number; // 时间效率（如 1.00 = 100%）
+  runs: number;
+  timeEfficiency: number; // 保留用户手动输入的时间效率（作为解码器之前的基准）
   decoderId?: string;
+  customRuns: boolean; // true 表示用户自定义了 runs，不遵循 maxRuns
 }
 
 export interface ReverseEngineeringConfig {
   reverseId: string;
-  itemCount: number; // 用户选择的基底材料数量
+  itemCount: number;
+  parallelRuns: number; // 并行流程数
   timeEfficiency: number;
   decoderId?: string;
 }

@@ -19,3 +19,8 @@ export interface MaterialEntry {
   itemId: string;
   quantity: number; // 原始基准数量
 }
+
+// Product 接口扩展（用于产品类型的物品）
+export interface ProductItem extends Item {
+  tags: string[]; // 树形节点继承的标签 ID 列表
+}
