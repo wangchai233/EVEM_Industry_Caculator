@@ -27,11 +27,12 @@ export function ProductionPanel() {
         ? getDecoderById(state.manufacturing.decoderId)
         : undefined;
       const productTags = bp.tags;
-      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder, 'mfg');
 
-      // 全局覆盖
+      // 全局覆盖：skills.ME 在引擎中会被 1.5 − skills.ME，所以要设成 1.5 − target
+      // TE 引擎用 1+skills.TE，所以要设成 targetTE − 1
       if (globalOverrides.enabled) {
-        bonuses.skills.materialEfficiency = globalOverrides.materialEfficiency - 1.5;
+        bonuses.skills.materialEfficiency = 1.5 - globalOverrides.materialEfficiency;
         bonuses.skills.timeEfficiency = globalOverrides.timeEfficiency - 1.0;
         bonuses.skills.successRate = globalOverrides.successRate;
         bonuses.facilities.materialEfficiency = 0;
@@ -52,11 +53,10 @@ export function ProductionPanel() {
         ? getDecoderById(state.reverse.decoderId)
         : undefined;
       const productTags = rev.tags;
-      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder);
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder, 'rev');
 
-      // 全局覆盖
       if (globalOverrides.enabled) {
-        bonuses.skills.materialEfficiency = globalOverrides.materialEfficiency - 1.5;
+        bonuses.skills.materialEfficiency = 1.5 - globalOverrides.materialEfficiency;
         bonuses.skills.timeEfficiency = globalOverrides.timeEfficiency - 1.0;
         bonuses.skills.successRate = globalOverrides.successRate;
         bonuses.facilities.materialEfficiency = 0;

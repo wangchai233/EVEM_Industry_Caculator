@@ -18,8 +18,8 @@ export function calculateManufacturing(
   const materials: ProductionResult['materials'] = [];
   let totalMaterialCost: number | null = 0;
 
-  // 材料效率 = 1.5 + 技能 + 设施 + 解码器
-  const finalME = 1.5 + bonuses.skills.materialEfficiency + bonuses.facilities.materialEfficiency + bonuses.decoder.materialEfficiency;
+  // 材料效率 = 1.5 − 技能 − 设施 + 解码器（技能"加材料效率"= 降低ME，更省材料）
+  const finalME = 1.5 - bonuses.skills.materialEfficiency - bonuses.facilities.materialEfficiency + bonuses.decoder.materialEfficiency;
 
   const effRuns = config.runs + (decoder?.runBonus ?? 0);
 

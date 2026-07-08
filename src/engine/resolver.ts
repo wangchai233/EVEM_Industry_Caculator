@@ -16,6 +16,7 @@ export function resolveBonuses(
   activeFacility: FacilityDef | undefined,
   customFacility: CustomFacilityBonus,
   decoder: DecoderLike | undefined,
+  projectType: 'mfg' | 'rev',
 ): BonusLayers {
   const result: BonusLayers = {
     skills: { materialEfficiency: 0, timeEfficiency: 0, successRate: 0, costMultiplier: 0, breakdown: [] },
@@ -25,26 +26,53 @@ export function resolveBonuses(
 
   // 技能加成
   for (const skill of allSkills) {
+    // 技能范围隔离：mfg 技能只在制造生效，rev 只在逆向生效
+    if (skill.skillType !== projectType && skill.skillType !== 'both') continue;
+
     const hasMatch = skill.matchTags.some(t => productTags.includes(t));
     if (!hasMatch) continue;
 
     const [base, adv, exp] = skillLevels[skill.id] ?? [0, 0, 0];
     const breakdown: Record<string, number> = {};
 
-    const applyEffects = (tier: typeof skill.base, level: number, prefix: string) => {
+    // 时间效率：三阶段乘法叠加
+    let teBase = 1, teAdv = 1, teExp = 1;
+    let meTotal = 0;
+    let srTotal = 0;
+    let costTotal = 0;
+
+    const accumEffects = (tier: typeof skill.base, level: number) => {
       if (level > 0 && level <= tier.effects.length) {
         const eff = tier.effects[level - 1];
-        if (eff.materialEfficiency) { result.skills.materialEfficiency += eff.materialEfficiency; breakdown[`${prefix}材料效率`] = eff.materialEfficiency; }
-        if (eff.timeEfficiency) { result.skills.timeEfficiency += eff.timeEfficiency; breakdown[`${prefix}时间效率`] = eff.timeEfficiency; }
-        if (eff.successRate) { result.skills.successRate += eff.successRate; breakdown[`${prefix}成功率`] = eff.successRate; }
-        if (eff.costMultiplier) { result.skills.costMultiplier += eff.costMultiplier; breakdown[`${prefix}现金费用`] = eff.costMultiplier; }
+        meTotal += eff.materialEfficiency ?? 0;
+        srTotal += eff.successRate ?? 0;
+        costTotal += eff.costMultiplier ?? 0;
       }
     };
 
-    applyEffects(skill.base, base, '基础');
-    applyEffects(skill.advanced, adv, '进阶');
-    applyEffects(skill.expert, exp, '专家');
+    // 单独处理 TE（乘法）
+    if (base > 0 && base <= skill.base.effects.length)
+      teBase = 1 + (skill.base.effects[base - 1].timeEfficiency ?? 0);
+    if (adv > 0 && adv <= skill.advanced.effects.length)
+      teAdv = 1 + (skill.advanced.effects[adv - 1].timeEfficiency ?? 0);
+    if (exp > 0 && exp <= skill.expert.effects.length)
+      teExp = 1 + (skill.expert.effects[exp - 1].timeEfficiency ?? 0);
 
+    const skillTE = teBase * teAdv * teExp - 1;
+    result.skills.timeEfficiency += skillTE;
+
+    accumEffects(skill.base, base);
+    accumEffects(skill.advanced, adv);
+    accumEffects(skill.expert, exp);
+
+    result.skills.materialEfficiency += meTotal;
+    result.skills.successRate += srTotal;
+    result.skills.costMultiplier += costTotal;
+
+    if (meTotal) breakdown['材料效率'] = meTotal;
+    if (skillTE) breakdown['时间效率'] = skillTE;
+    if (srTotal) breakdown['成功率'] = srTotal;
+    if (costTotal) breakdown['现金费用'] = costTotal;
     if (Object.keys(breakdown).length > 0) {
       result.skills.breakdown.push({ skillName: skill.name, effects: breakdown });
     }

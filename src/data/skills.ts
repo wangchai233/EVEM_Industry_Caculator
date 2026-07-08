@@ -4,6 +4,7 @@ export const defaultSkills: SkillDef[] = [
   {
     id: 'frigate_manufacturing',
     name: '护卫舰制造技术',
+    skillType: 'mfg',
     matchTags: ['frigate'],
     base: {
       effects: [
@@ -36,6 +37,7 @@ export const defaultSkills: SkillDef[] = [
   {
     id: 'caldari_invention',
     name: '加达里发明原理',
+    skillType: 'rev',
     matchTags: ['caldari'],
     base: {
       effects: [
