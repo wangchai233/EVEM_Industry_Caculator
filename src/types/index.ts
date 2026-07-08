@@ -7,3 +7,4 @@ export * from './skill';
 export * from './facility';
 export * from './discount';
 export * from './bonus';
+export * from './productTree';

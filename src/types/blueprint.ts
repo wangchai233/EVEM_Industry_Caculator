@@ -9,6 +9,7 @@ export interface Blueprint {
   materials: { itemId: string; quantity: number }[];
   maxRuns: number;
   tags: string[]; // 产品标签
+  isCustom?: boolean;
 }
 
 export type DecoderCategory = 'mfg' | 'rev';
@@ -35,4 +36,5 @@ export interface ReverseEngineeringData {
   baseCost: number;
   dataCores: { itemId: string; quantity: number }[];
   tags: string[];
+  isCustom?: boolean;
 }
