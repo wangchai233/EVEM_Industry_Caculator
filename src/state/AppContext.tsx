@@ -1,7 +1,9 @@
 import { createContext, useContext, useCallback, type ReactNode } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import type { PriceConfig } from '../types';
+import type { PriceConfig, SkillLevels, CustomFacilityBonus, DiscountRule } from '../types';
+import { EMPTY_BONUS } from '../types/bonus';
 import { defaultItems, allItems, defaultBlueprints, defaultReverse, defaultDecoders } from '../data';
+import { defaultSkills, defaultSkillLevels } from '../data/skills';
 
 interface AppState {
   priceConfigs: PriceConfig[];
@@ -10,6 +12,10 @@ interface AppState {
   customBlueprints: typeof defaultBlueprints;
   customReverse: typeof defaultReverse;
   customDecoders: typeof defaultDecoders;
+  skillLevels: SkillLevels;
+  activeFacilityId: string;
+  customFacility: CustomFacilityBonus;
+  discountRules: DiscountRule[];
 }
 
 interface AppContextType extends AppState {
@@ -21,6 +27,18 @@ interface AppContextType extends AppState {
   switchConfig: (id: string) => void;
   getAllData: () => object;
   importData: (data: object) => void;
+  // 技能相关
+  setSkillLevels: (levels: SkillLevels | ((prev: SkillLevels) => SkillLevels)) => void;
+  updateSkillLevel: (skillId: string, tier: 0 | 1 | 2, level: number) => void;
+  batchSetSkillLevels: (preset: string) => void;
+  // 设施相关
+  setActiveFacilityId: (id: string | ((prev: string) => string)) => void;
+  setCustomFacility: (bonus: CustomFacilityBonus | ((prev: CustomFacilityBonus) => CustomFacilityBonus)) => void;
+  // 折扣相关
+  setDiscountRules: (rules: DiscountRule[] | ((prev: DiscountRule[]) => DiscountRule[])) => void;
+  addDiscountRule: (rule: Omit<DiscountRule, 'id'>) => void;
+  removeDiscountRule: (id: string) => void;
+  getDiscount: (itemId: string, scope: 'buy' | 'sell', category?: string) => number | null;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -35,6 +53,21 @@ const defaultConfig: PriceConfig = {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [configs, setConfigs] = useLocalStorage<PriceConfig[]>('evem_price_configs', [defaultConfig]);
   const [activeId, setActiveId] = useLocalStorage<string>('evem_active_config', 'default');
+
+  // 技能状态
+  const [skillLevels, setSkillLevels] = useLocalStorage<SkillLevels>('evem_skill_levels', defaultSkillLevels);
+
+  // 设施状态
+  const [activeFacilityId, setActiveFacilityId] = useLocalStorage<string>('evem_active_facility', '');
+  const [customFacility, setCustomFacility] = useLocalStorage<CustomFacilityBonus>('evem_custom_facility', {
+    materialEfficiency: 0,
+    timeEfficiency: 0,
+    successRate: 0,
+    costMultiplier: 0,
+  });
+
+  // 折扣规则
+  const [discountRules, setDiscountRules] = useLocalStorage<DiscountRule[]>('evem_discount_rules', []);
 
   const activeConfig = configs.find(c => c.id === activeId) ?? configs[0];
 
@@ -90,6 +123,50 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (data?.activeConfigId) setActiveId(data.activeConfigId);
   }, [setConfigs, setActiveId]);
 
+  // 批量设置技能等级
+  const batchSetSkillLevels = useCallback((preset: string) => {
+    const b = parseInt(preset[0] || '0');
+    const a = parseInt(preset[1] || '0');
+    const e = parseInt(preset[2] || '0');
+    const newLevels: SkillLevels = {};
+    defaultSkills.forEach(s => { newLevels[s.id] = [b, a, e]; });
+    setSkillLevels(newLevels);
+  }, [setSkillLevels]);
+
+  // 更新单个技能等级（带级联约束）
+  const updateSkillLevel = useCallback((skillId: string, tier: 0 | 1 | 2, level: number) => {
+    setSkillLevels(prev => {
+      const current = [...(prev[skillId] ?? [0, 0, 0])] as [number, number, number];
+      current[tier] = Math.max(0, Math.min(5, level));
+      // 级联约束：进阶>0 需要基础≥4
+      if (current[1] > 0 && current[0] < 4) current[1] = 0;
+      // 级联约束：专家>0 需要进阶≥5
+      if (current[2] > 0 && current[1] < 5) current[2] = 0;
+      return { ...prev, [skillId]: current };
+    });
+  }, [setSkillLevels]);
+
+  // 添加折扣规则
+  const addDiscountRule = useCallback((rule: Omit<DiscountRule, 'id'>) => {
+    const newRule: DiscountRule = { ...rule, id: Date.now().toString(36) };
+    setDiscountRules(prev => [...prev, newRule]);
+  }, [setDiscountRules]);
+
+  // 删除折扣规则
+  const removeDiscountRule = useCallback((id: string) => {
+    setDiscountRules(prev => prev.filter(r => r.id !== id));
+  }, [setDiscountRules]);
+
+  // 获取折扣
+  const getDiscount = useCallback((itemId: string, scope: 'buy' | 'sell', category?: string): number | null => {
+    for (const rule of discountRules) {
+      if (rule.scope !== scope) continue;
+      if (rule.type === 'item' && rule.targetId === itemId) return rule.rate;
+      if (rule.type === 'category' && rule.targetId === category) return rule.rate;
+    }
+    return null;
+  }, [discountRules]);
+
   return (
     <AppContext.Provider value={{
       priceConfigs: configs, activeConfigId: activeId,
@@ -97,6 +174,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       customReverse: defaultReverse, customDecoders: defaultDecoders,
       getPrice, setPrice, createPriceConfig, deletePriceConfig,
       renamePriceConfig, switchConfig, getAllData, importData,
+      // 技能
+      skillLevels, setSkillLevels, updateSkillLevel, batchSetSkillLevels,
+      // 设施
+      activeFacilityId, setActiveFacilityId, customFacility, setCustomFacility,
+      // 折扣
+      discountRules, setDiscountRules, addDiscountRule, removeDiscountRule, getDiscount,
     }}>
       {children}
     </AppContext.Provider>

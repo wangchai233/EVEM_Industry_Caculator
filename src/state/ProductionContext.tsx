@@ -21,13 +21,16 @@ const initialState: ProductionState = {
   manufacturing: {
     blueprintId: '',
     runs: 1,
-    materialEfficiency: 1.5,
     timeEfficiency: 1.0,
+    decoderId: undefined,
+    customRuns: false,
   },
   reverse: {
     reverseId: '',
     itemCount: 1,
+    parallelRuns: 1,
     timeEfficiency: 1.0,
+    decoderId: undefined,
   },
   result: null,
 };
