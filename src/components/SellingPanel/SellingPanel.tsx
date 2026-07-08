@@ -8,23 +8,30 @@ import { ProfitSummary } from './ProfitSummary';
 import styles from './SellingPanel.module.css';
 
 export function SellingPanel() {
-  const { state, dispatch } = useSelling();
+  const { state, dispatch, manualData } = useSelling();
 
   useEffect(() => {
-    if (!state.costData) {
+    const effectiveCostData = state.costData ?? (
+      manualData
+        ? { totalCost: manualData.totalCost, costPerUnit: null, productCount: manualData.quantity }
+        : null
+    );
+
+    if (!effectiveCostData) {
       dispatch({ type: 'SET_RESULT', payload: null });
       return;
     }
+
     const effectiveSellPrice = state.config.sellPrice * (state.discountOverride ?? 1.0);
     const effectiveConfig = { ...state.config, sellPrice: effectiveSellPrice };
     if (state.config.mode === 'market' && effectiveConfig.sellPrice > 0) {
-      const result = calculateMarketSelling(effectiveConfig as typeof state.config & { sellPrice: number }, state.costData);
+      const result = calculateMarketSelling(effectiveConfig as typeof state.config & { sellPrice: number }, effectiveCostData);
       dispatch({ type: 'SET_RESULT', payload: result });
     } else if (state.config.mode === 'contract' && effectiveConfig.sellPrice > 0) {
-      const result = calculateContractSelling(effectiveConfig as typeof state.config & { sellPrice: number }, state.costData);
+      const result = calculateContractSelling(effectiveConfig as typeof state.config & { sellPrice: number }, effectiveCostData);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.config, state.costData, state.discountOverride, dispatch]);
+  }, [state.config, state.costData, state.discountOverride, manualData, dispatch]);
 
   return (
     <div className={styles.panel}>

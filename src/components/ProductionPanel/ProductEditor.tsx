@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useApp } from '../../state/AppContext';
 import { useProduction } from '../../state/ProductionContext';
-import type { Blueprint, ReverseEngineeringData } from '../../types';
+import { tagTree } from '../../data/tags';
+import type { Blueprint, ReverseEngineeringData, ProductTreeNode } from '../../types';
 import styles from './ProductEditor.module.css';
 
 interface MaterialGroup {
   category: string;
-  items: Array<{ itemId: string; quantity: number }>;
+  items: Array<{ itemId: string; quantity: number; isBase?: boolean }>;
 }
 
 interface Props {
@@ -22,84 +23,118 @@ function getDefaultGroups(mode: 'mfg' | 'rev'): MaterialGroup[] {
 }
 
 export function ProductEditor({ mode, initial, onClose }: Props) {
-  const { addCustomBlueprint, addCustomReverse } = useApp();
+  const {
+    addCustomBlueprint, updateCustomBlueprint,
+    addCustomReverse, updateCustomReverse,
+    customTreeNodes, setCustomTreeNodes,
+  } = useApp();
   const { dispatch } = useProduction();
+
+  const isEdit = !!initial;
+  const initBp = mode === 'mfg' ? (initial as Blueprint | undefined) : undefined;
+  const initRev = mode === 'rev' ? (initial as ReverseEngineeringData | undefined) : undefined;
 
   const [name, setName] = useState(initial?.name ?? '');
   const [baseTime, setBaseTime] = useState(
-    mode === 'mfg'
-      ? (initial as Blueprint | undefined)?.baseTime ?? 3600
-      : (initial as ReverseEngineeringData | undefined)?.baseTime ?? 1800,
+    mode === 'mfg' ? (initBp?.baseTime ?? 3600) : (initRev?.baseTime ?? 1800),
   );
-  const [baseCost, setBaseCost] = useState(
-    (initial as any)?.baseCost ?? 0,
-  );
+  const [baseCost, setBaseCost] = useState((initial as any)?.baseCost ?? 0);
   const [productQuantity, setProductQuantity] = useState(
-    mode === 'mfg' ? (initial as Blueprint | undefined)?.productQuantity ?? 1 : 1,
+    mode === 'mfg' ? (initBp?.productQuantity ?? 1) : 1,
   );
 
   // 逆向专用字段
-  const [baseItemId, setBaseItemId] = useState(
-    (initial as ReverseEngineeringData | undefined)?.baseItemId ?? '',
-  );
-  const [maxItemCount, setMaxItemCount] = useState(
-    (initial as ReverseEngineeringData | undefined)?.maxItemCount ?? 1,
-  );
-  const [maxBaseSR, setMaxBaseSR] = useState(
-    (initial as ReverseEngineeringData | undefined)?.maxBaseSuccessRate ?? 0.5,
-  );
+  const [baseItemId, setBaseItemId] = useState(initRev?.baseItemId ?? '');
+  const [maxItemCount, setMaxItemCount] = useState(initRev?.maxItemCount ?? 1);
+  const [maxBaseSR, setMaxBaseSR] = useState(initRev?.maxBaseSuccessRate ?? 0.5);
 
-  // 材料：从 initial 中提取已有的分组，否则用默认分组
+  // 材料分组
   const [materialGroups, setMaterialGroups] = useState<MaterialGroup[]>(() => {
-    if (mode === 'mfg' && initial) {
-      // 将扁平材料列表归入默认分组（简单策略：都放在第一个分组）
-      const bp = initial as Blueprint;
+    if (mode === 'mfg' && initBp) {
       const groups = getDefaultGroups('mfg');
-      if (bp.materials.length > 0) {
-        groups[0].items = bp.materials.map(m => ({ ...m }));
+      if (initBp.materials.length > 0) {
+        groups[0].items = initBp.materials.map(m => ({ ...m }));
       }
       return groups;
     }
-    if (mode === 'rev' && initial) {
-      const rev = initial as ReverseEngineeringData;
+    if (mode === 'rev' && initRev) {
       const groups = getDefaultGroups('rev');
-      if (rev.dataCores.length > 0) {
-        groups[0].items = rev.dataCores.map(d => ({ ...d }));
+      if (initRev.dataCores.length > 0) {
+        groups[0].items = initRev.dataCores.map(d => ({ ...d }));
       }
       return groups;
     }
     return getDefaultGroups(mode);
   });
 
+  // Tag 选择
+  const allAvailableTags = [
+    ...tagTree.map(t => ({ id: t.id, name: t.name, isCustom: false })),
+    ...customTreeNodes
+      .filter(n => !tagTree.some(t => t.id === n.id))
+      .map(n => ({ id: n.id, name: n.name, isCustom: true })),
+  ];
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    initial?.tags ?? ['custom'],
+  );
+  const [showTagDropdown, setShowTagDropdown] = useState(false);
+  const [newTagInput, setNewTagInput] = useState('');
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags(prev =>
+      prev.includes(tagId) ? prev.filter(t => t !== tagId) : [...prev, tagId],
+    );
+  };
+
+  const handleCreateTag = () => {
+    const tagName = newTagInput.trim();
+    if (!tagName) return;
+    const tagId = `tag_custom_${Date.now().toString(36)}`;
+    const newNode: ProductTreeNode = {
+      id: tagId,
+      name: tagName,
+      parentId: 'root_custom',
+      productIds: mode === 'mfg' ? [initial?.id ?? ''] : [],
+      reverseIds: mode === 'rev' ? [initial?.id ?? ''] : [],
+      tags: [],
+      isCustom: true,
+    };
+    setCustomTreeNodes(prev => [...prev, newNode]);
+    setSelectedTags(prev => [...prev, tagId]);
+    setNewTagInput('');
+  };
+
   const handleSave = () => {
     if (!name.trim()) return;
     if (mode === 'mfg') {
-      const id = `custom_${Date.now().toString(36)}`;
       const materials = materialGroups.flatMap(g =>
-        g.items.map(i => ({ itemId: i.itemId, quantity: i.quantity })),
+        g.items.map(i => ({ itemId: i.itemId, quantity: i.quantity, isBase: i.isBase })),
       );
-      const bp: Blueprint = {
-        id,
+      const bpData: Blueprint = {
+        id: initial?.id ?? `custom_${Date.now().toString(36)}`,
         name,
-        productItemId: id,
+        productItemId: initial?.id ?? '',
         productName: name,
         productQuantity,
         baseTime,
         baseCost,
         materials,
         maxRuns: 10,
-        tags: ['custom'],
+        tags: selectedTags,
         isCustom: true,
       };
-      addCustomBlueprint(bp);
-      dispatch({ type: 'SET_MANUFACTURING', payload: { blueprintId: bp.id } });
+      if (isEdit) {
+        updateCustomBlueprint(initial!.id, bpData);
+      } else {
+        addCustomBlueprint(bpData);
+        dispatch({ type: 'SET_MANUFACTURING', payload: { blueprintId: bpData.id } });
+      }
     } else {
-      const id = `custom_rev_${Date.now().toString(36)}`;
       const dataCores = materialGroups.flatMap(g =>
-        g.items.map(i => ({ itemId: i.itemId, quantity: i.quantity })),
+        g.items.map(i => ({ itemId: i.itemId, quantity: i.quantity, isBase: i.isBase })),
       );
-      const rev: ReverseEngineeringData = {
-        id,
+      const revData: ReverseEngineeringData = {
+        id: initial?.id ?? `custom_rev_${Date.now().toString(36)}`,
         name: `${name}逆向`,
         targetBlueprintId: '',
         baseItemId,
@@ -109,11 +144,15 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
         baseTime,
         baseCost,
         dataCores,
-        tags: ['custom'],
+        tags: selectedTags,
         isCustom: true,
       };
-      addCustomReverse(rev);
-      dispatch({ type: 'SET_REVERSE', payload: { reverseId: rev.id } });
+      if (isEdit) {
+        updateCustomReverse(initial!.id, revData);
+      } else {
+        addCustomReverse(revData);
+        dispatch({ type: 'SET_REVERSE', payload: { reverseId: revData.id } });
+      }
     }
     onClose();
   };
@@ -151,11 +190,26 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
     );
   };
 
+  const toggleItemBase = (groupIdx: number, itemIdx: number) => {
+    setMaterialGroups(prev =>
+      prev.map((g, i) =>
+        i === groupIdx
+          ? {
+              ...g,
+              items: g.items.map((it, j) =>
+                j === itemIdx ? { ...it, isBase: !it.isBase } : it,
+              ),
+            }
+          : g,
+      ),
+    );
+  };
+
   return (
     <div className={styles.overlay}>
       <div className={styles.panel}>
         <div className={styles.header}>
-          <h4>{mode === 'mfg' ? '编辑制造产品' : '编辑逆向配置'}</h4>
+          <h4>{isEdit ? (mode === 'mfg' ? '编辑制造产品' : '编辑逆向配置') : (mode === 'mfg' ? '新建制造产品' : '新建逆向配置')}</h4>
           <button className={styles.closeBtn} onClick={onClose}>
             ✕
           </button>
@@ -163,10 +217,7 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
 
         <div className={styles.field}>
           <label>名称</label>
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
+          <input value={name} onChange={e => setName(e.target.value)} />
         </div>
 
         <div className={styles.row}>
@@ -194,9 +245,7 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
             <input
               type="number"
               value={productQuantity}
-              onChange={e =>
-                setProductQuantity(parseInt(e.target.value) || 1)
-              }
+              onChange={e => setProductQuantity(parseInt(e.target.value) || 1)}
             />
           </div>
         )}
@@ -205,10 +254,7 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
           <>
             <div className={styles.field}>
               <label>基底材料 ID</label>
-              <input
-                value={baseItemId}
-                onChange={e => setBaseItemId(e.target.value)}
-              />
+              <input value={baseItemId} onChange={e => setBaseItemId(e.target.value)} />
             </div>
             <div className={styles.row}>
               <div className={styles.field}>
@@ -216,9 +262,7 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
                 <input
                   type="number"
                   value={maxItemCount}
-                  onChange={e =>
-                    setMaxItemCount(parseInt(e.target.value) || 1)
-                  }
+                  onChange={e => setMaxItemCount(parseInt(e.target.value) || 1)}
                 />
               </div>
               <div className={styles.field}>
@@ -227,15 +271,63 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
                   type="number"
                   step="0.01"
                   value={maxBaseSR}
-                  onChange={e =>
-                    setMaxBaseSR(parseFloat(e.target.value) || 0)
-                  }
+                  onChange={e => setMaxBaseSR(parseFloat(e.target.value) || 0)}
                 />
               </div>
             </div>
           </>
         )}
 
+        {/* Tag 选择器 */}
+        <div className={styles.field}>
+          <label>产品标签</label>
+          <div className={styles.tagArea}>
+            <div className={styles.tagChips}>
+              {selectedTags.map(tagId => {
+                const tag = allAvailableTags.find(t => t.id === tagId);
+                return (
+                  <span key={tagId} className={styles.tagChip}>
+                    {tag?.name ?? tagId}
+                    <button onClick={() => toggleTag(tagId)}>✕</button>
+                  </span>
+                );
+              })}
+            </div>
+            <div className={styles.tagRow}>
+              <button
+                className={styles.tagBtn}
+                onClick={() => setShowTagDropdown(!showTagDropdown)}
+              >
+                + 选择标签
+              </button>
+              <input
+                className={styles.tagNewInput}
+                placeholder="新建标签..."
+                value={newTagInput}
+                onChange={e => setNewTagInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleCreateTag(); }}
+              />
+              <button className={styles.tagBtn} onClick={handleCreateTag}>新建</button>
+            </div>
+            {showTagDropdown && (
+              <div className={styles.tagDropdown}>
+                {allAvailableTags.map(tag => (
+                  <label key={tag.id} className={styles.tagOption}>
+                    <input
+                      type="checkbox"
+                      checked={selectedTags.includes(tag.id)}
+                      onChange={() => toggleTag(tag.id)}
+                    />
+                    {tag.name}
+                    {tag.isCustom && <span className={styles.customBadge}>自定义</span>}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 材料区域 */}
         <div className={styles.materials}>
           <label>材料</label>
           {materialGroups.map((g, gi) => (
@@ -246,10 +338,20 @@ export function ProductEditor({ mode, initial, onClose }: Props) {
               </div>
               {g.items.map((it, ii) => (
                 <div key={ii} className={styles.item}>
-                  <span>
+                  <span className={styles.itemName}>
                     {it.itemId} × {it.quantity}
                   </span>
-                  <button onClick={() => removeItemFromGroup(gi, ii)}>✕</button>
+                  <span className={styles.itemActions}>
+                    <label className={styles.baseCheck}>
+                      <input
+                        type="checkbox"
+                        checked={!!it.isBase}
+                        onChange={() => toggleItemBase(gi, ii)}
+                      />
+                      基底
+                    </label>
+                    <button onClick={() => removeItemFromGroup(gi, ii)}>✕</button>
+                  </span>
                 </div>
               ))}
               <button

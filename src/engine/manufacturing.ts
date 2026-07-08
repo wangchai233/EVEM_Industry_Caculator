@@ -45,7 +45,15 @@ export function calculateManufacturing(
   };
 
   // 蓝图（基底）
-  processMaterial(bp.id, 1, true);
+  const bpPrice = getPrice(bp.id);
+  const bpSubtotal = bpPrice !== null ? bpPrice * config.runs : null;
+  if (bpSubtotal === null) totalMaterialCost = null;
+  else if (totalMaterialCost !== null) totalMaterialCost += bpSubtotal;
+  materials.push({
+    itemId: bp.id, itemName: bp.name, category: 'blueprint',
+    baseQuantity: 1, adjustedQuantity: 1, totalQuantity: config.runs,
+    unitPrice: bpPrice, subtotal: bpSubtotal, isBaseMaterial: true,
+  });
 
   // 解码器（基底）
   if (decoder) {
@@ -62,7 +70,7 @@ export function calculateManufacturing(
 
   // 普通材料
   for (const m of bp.materials) {
-    processMaterial(m.itemId, m.quantity, false);
+    processMaterial(m.itemId, m.quantity, m.isBase ?? false);
   }
 
   // 时间 = 基础 × (1+技能) × (1+设施) × (1+解码器)，乘法

@@ -12,8 +12,8 @@
   background: var(--color-surface);
   border-radius: var(--radius);
   padding: 20px;
-  width: 480px;
-  max-height: 80vh;
+  width: 520px;
+  max-height: 85vh;
   overflow-y: auto;
 }
 
@@ -70,6 +70,105 @@
   flex: 1;
 }
 
+/* Tag 选择器 */
+.tagArea {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+}
+
+.tagChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+  min-height: 24px;
+}
+
+.tagChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+.tagChip button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 10px;
+  padding: 0;
+}
+
+.tagRow {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.tagBtn {
+  font-size: 11px;
+  padding: 2px 8px;
+  cursor: pointer;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.tagBtn:hover {
+  background: var(--color-surface);
+}
+
+.tagNewInput {
+  flex: 1;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 2px 6px;
+  font-size: 12px;
+  width: auto !important;
+}
+
+.tagDropdown {
+  margin-top: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 4px;
+}
+
+.tagOption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.tagOption:hover {
+  background: var(--color-surface);
+}
+
+.customBadge {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  background: var(--color-border);
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+/* 材料 */
 .materials {
   margin-top: 8px;
 }
@@ -114,12 +213,37 @@
   color: var(--color-text);
 }
 
-.item button {
+.itemName {
+  flex: 1;
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.itemActions button {
   background: none;
   border: none;
   color: var(--color-text-secondary);
   cursor: pointer;
   font-size: 12px;
+}
+
+.baseCheck {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.baseCheck input {
+  width: auto;
+  margin: 0;
 }
 
 .addItemBtn,

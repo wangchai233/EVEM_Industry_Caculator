@@ -44,7 +44,7 @@ export const defaultTree: ProductTreeNode[] = [
   {
     id: 'root_custom', name: '自定义产品', parentId: null,
     productIds: [], reverseIds: [],
-    tags: [], isCustom: true,
+    tags: [], isCustom: false,
   },
 ];
 

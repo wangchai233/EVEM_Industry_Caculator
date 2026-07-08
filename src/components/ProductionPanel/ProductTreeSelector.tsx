@@ -8,11 +8,12 @@ import styles from './ProductTreeSelector.module.css';
 
 interface Props {
   onOpenEditor?: () => void;
+  onEditProduct?: (id: string, mode: 'mfg' | 'rev') => void;
 }
 
-export function ProductTreeSelector({ onOpenEditor }: Props) {
+export function ProductTreeSelector({ onOpenEditor, onEditProduct }: Props) {
   const { state, dispatch } = useProduction();
-  const { customBlueprints, customReverse, customTreeNodes } = useApp();
+  const { customBlueprints, customReverse, customTreeNodes, deleteCustomBlueprint, deleteCustomReverse } = useApp();
   const [search, setSearch] = useState('');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
     // 初始展开根级
@@ -113,22 +114,35 @@ export function ProductTreeSelector({ onOpenEditor }: Props) {
     }
   };
 
+  const handleDelete = (bp: any) => {
+    if (!confirm(`确定删除"${bp.name}"？`)) return;
+    if (isMfg) {
+      deleteCustomBlueprint(bp.id);
+      if (selectedId === bp.id) dispatch({ type: 'SET_MANUFACTURING', payload: { blueprintId: '' } });
+    } else {
+      deleteCustomReverse(bp.id);
+      if (selectedId === bp.id) dispatch({ type: 'SET_REVERSE', payload: { reverseId: '' } });
+    }
+  };
+
   // 递归渲染节点
   function renderNode(node: ProductTreeNode, depth: number): React.JSX.Element {
     const children = getChildren(node.id);
     const products = getProducts(node);
     const isExpanded = visibleExpanded.has(node.id);
     const hasChildren = children.length > 0;
+    const hasProducts = products.length > 0;
+    const isExpandable = hasChildren || hasProducts;
 
     return (
       <div key={node.id}>
         <div
           className={`${styles.nodeRow} ${isExpanded ? styles.expanded : ''}`}
           style={{ paddingLeft: depth * 16 }}
-          onClick={() => hasChildren ? toggleExpand(node.id) : undefined}
+          onClick={() => isExpandable ? toggleExpand(node.id) : undefined}
         >
-          {hasChildren && <span className={styles.arrow}>{isExpanded ? '▼' : '▶'}</span>}
-          {!hasChildren && <span className={styles.arrow} />}
+          {isExpandable && <span className={styles.arrow}>{isExpanded ? '▼' : '▶'}</span>}
+          {!isExpandable && <span className={styles.arrow} />}
           <span className={styles.nodeName}>
             {node.isCustom ? '⚙️ ' : ''}{node.name}
           </span>
@@ -137,14 +151,30 @@ export function ProductTreeSelector({ onOpenEditor }: Props) {
           <div>
             {products.map(bp => {
               const displayName = isMfg ? (bp as any).productName || bp.name : bp.name;
+              const bpAny = bp as any;
               return (
                 <div
                   key={bp.id}
                   className={`${styles.leafRow} ${selectedId === bp.id ? styles.selected : ''}`}
                   style={{ paddingLeft: (depth + 1) * 16 }}
-                  onClick={() => handleSelect(bp.id)}
                 >
-                  {bp.isCustom ? '⚙️ ' : ''}{displayName}
+                  <span className={styles.leafName} onClick={() => handleSelect(bp.id)}>
+                    {bpAny.isCustom ? '⚙️ ' : ''}{displayName}
+                  </span>
+                  {bpAny.isCustom && (
+                    <span className={styles.leafActions}>
+                      <button
+                        className={styles.leafBtn}
+                        title="编辑"
+                        onClick={(e) => { e.stopPropagation(); onEditProduct?.(bp.id, isMfg ? 'mfg' : 'rev'); }}
+                      >⚙️</button>
+                      <button
+                        className={styles.leafBtn}
+                        title="删除"
+                        onClick={(e) => { e.stopPropagation(); handleDelete(bpAny); }}
+                      >✕</button>
+                    </span>
+                  )}
                 </div>
               );
             })}

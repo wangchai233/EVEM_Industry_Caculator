@@ -18,14 +18,32 @@ import styles from './ProductionPanel.module.css';
 
 export function ProductionPanel() {
   const { state, dispatch } = useProduction();
-  const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides } = useApp();
+  const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse } = useApp();
 
   const [editorOpen, setEditorOpen] = useState(false);
-  const handleCloseEditor = () => setEditorOpen(false);
+  const [editTarget, setEditTarget] = useState<{ id: string; mode: 'mfg' | 'rev' } | null>(null);
+  const [ignoreUnsetPrice, setIgnoreUnsetPrice] = useState(false);
+  const handleCloseEditor = () => { setEditorOpen(false); setEditTarget(null); };
+
+  const getPriceWithIgnore = (itemId: string): number | null => {
+    const price = getPrice(itemId);
+    return price ?? (ignoreUnsetPrice ? 0 : null);
+  };
+
+  const handleEditProduct = (id: string, mode: 'mfg' | 'rev') => {
+    setEditTarget({ id, mode });
+    setEditorOpen(true);
+  };
+
+  const initialData = editTarget
+    ? editTarget.mode === 'mfg'
+      ? customBlueprints.find(b => b.id === editTarget.id)
+      : customReverse.find(r => r.id === editTarget.id)
+    : undefined;
 
   useEffect(() => {
     if (state.projectType === 'manufacturing') {
-      const bp = getBlueprintById(state.manufacturing.blueprintId);
+      const bp = getBlueprintById(state.manufacturing.blueprintId, customBlueprints);
       if (!bp) { dispatch({ type: 'SET_RESULT', payload: null }); return; }
       const decoder = state.manufacturing.decoderId
         ? getDecoderById(state.manufacturing.decoderId)
@@ -48,10 +66,10 @@ export function ProductionPanel() {
       }
 
       const discountWrapper = (itemId: string) => getDiscount(itemId, 'buy');
-      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPrice, bonuses, discountWrapper);
+      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPriceWithIgnore, bonuses, discountWrapper);
       dispatch({ type: 'SET_RESULT', payload: result });
     } else {
-      const rev = getReverseById(state.reverse.reverseId);
+      const rev = getReverseById(state.reverse.reverseId, customReverse);
       if (!rev) { dispatch({ type: 'SET_RESULT', payload: null }); return; }
       const decoder = state.reverse.decoderId
         ? getDecoderById(state.reverse.decoderId)
@@ -71,23 +89,35 @@ export function ProductionPanel() {
         bonuses.decoder.successRate = 0;
       }
 
-      const result = calculateReverse(state.reverse, rev, decoder, getPrice, bonuses);
+      const result = calculateReverse(state.reverse, rev, decoder, getPriceWithIgnore, bonuses);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides]);
+  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, ignoreUnsetPrice]);
 
   return (
     <div className={styles.panel}>
       <ProjectTypeTabs />
-      <ProductTreeSelector onOpenEditor={() => setEditorOpen(true)} />
+      <ProductTreeSelector onOpenEditor={() => setEditorOpen(true)} onEditProduct={handleEditProduct} />
       <EfficiencyConfig />
       <DecoderSelector />
       {state.projectType === 'reverse' && <ReverseExtras />}
+      <div className={styles.section}>
+        <div className={styles.toggleRow}>
+          <span>忽略未填价格</span>
+          <div
+            className={`${styles.toggle} ${ignoreUnsetPrice ? styles.toggleOn : ''}`}
+            onClick={() => setIgnoreUnsetPrice(!ignoreUnsetPrice)}
+          >
+            <div className={styles.toggleKnob} />
+          </div>
+        </div>
+      </div>
       <MaterialList />
       <ProductionSummary />
       {editorOpen && (
         <ProductEditor
           mode={state.projectType === 'manufacturing' ? 'mfg' : 'rev'}
+          initial={initialData}
           onClose={handleCloseEditor}
         />
       )}

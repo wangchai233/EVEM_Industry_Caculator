@@ -1,5 +1,11 @@
 import { createContext, useContext, useReducer, type ReactNode, type Dispatch } from 'react';
+import { useLocalStorage } from './useLocalStorage';
 import type { SellingConfig, SellingResult } from '../types';
+
+export interface ManualSellData {
+  quantity: number;
+  totalCost: number | null;
+}
 
 interface SellingState {
   config: SellingConfig;
@@ -39,12 +45,16 @@ function reducer(state: SellingState, action: Action): SellingState {
 const SellingContext = createContext<{
   state: SellingState;
   dispatch: Dispatch<Action>;
+  manualData: ManualSellData | null;
+  setManualData: (data: ManualSellData | null) => void;
 } | null>(null);
 
 export function SellingProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [manualData, setManualData] = useLocalStorage<ManualSellData | null>('evem_selling_manual', null);
+
   return (
-    <SellingContext.Provider value={{ state, dispatch }}>
+    <SellingContext.Provider value={{ state, dispatch, manualData, setManualData }}>
       {children}
     </SellingContext.Provider>
   );

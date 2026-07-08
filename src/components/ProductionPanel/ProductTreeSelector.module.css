@@ -14,11 +14,19 @@
 .arrow { width: 14px; font-size: 10px; }
 .nodeName { font-weight: 600; }
 .leafRow {
-  padding: 3px 0; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; padding: 3px 0; cursor: pointer; font-size: 13px;
   color: var(--color-text); user-select: none;
 }
 .leafRow:hover { background: var(--color-surface); }
-.selected { color: var(--color-primary); font-weight: 600; }
+.leafName { flex: 1; }
+.selected .leafName { color: var(--color-primary); font-weight: 600; }
+.leafActions { display: flex; gap: 2px; flex-shrink: 0; margin-right: 4px; }
+.leafBtn {
+  background: none; border: 1px solid var(--color-border); border-radius: 3px;
+  color: var(--color-text-secondary); cursor: pointer; font-size: 11px;
+  padding: 0 3px; line-height: 1.4;
+}
+.leafBtn:hover { color: var(--color-text); background: var(--color-bg); }
 .addBtn {
   color: var(--color-success); cursor: pointer; font-size: 13px; padding: 3px 0;
 }

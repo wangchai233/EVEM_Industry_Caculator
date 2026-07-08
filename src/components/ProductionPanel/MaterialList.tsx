@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useProduction } from '../../state/ProductionContext';
 import { useApp } from '../../state/AppContext';
 import { formatNumber } from '../../utils/format';
@@ -5,7 +6,8 @@ import styles from './ProductionPanel.module.css';
 
 export function MaterialList() {
   const { state } = useProduction();
-  const { setPrice, materialDiscounts, setMaterialDiscount } = useApp();
+  const { setPrice, clearPrice, materialDiscounts, setMaterialDiscount, clearMaterialDiscount } = useApp();
+  const [overwriteByCategory, setOverwriteByCategory] = useState<Record<string, boolean>>({});
 
   if (!state.result) return null;
 
@@ -26,12 +28,70 @@ export function MaterialList() {
     blueprint: '蓝图',
   };
 
+  const toggleOverwrite = (cat: string) => {
+    setOverwriteByCategory(prev => ({ ...prev, [cat]: !prev[cat] }));
+  };
+
+  const fillPrice = (cat: string, items: typeof materials) => {
+    const firstValue = items.find(m => m.unitPrice !== null)?.unitPrice;
+    if (firstValue === undefined) return;
+    const overwrite = overwriteByCategory[cat] ?? false;
+    for (const m of items) {
+      if (!overwrite && m.unitPrice !== null) continue;
+      setPrice(m.itemId, firstValue);
+    }
+  };
+
+  const fillDiscount = (cat: string, items: typeof materials) => {
+    const firstItem = items.find(m => materialDiscounts[m.itemId] !== undefined);
+    if (!firstItem) return;
+    const rate = materialDiscounts[firstItem.itemId];
+    if (rate === undefined) return;
+    const overwrite = overwriteByCategory[cat] ?? false;
+    for (const m of items) {
+      const existing = materialDiscounts[m.itemId];
+      if (!overwrite && existing !== undefined) continue;
+      setMaterialDiscount(m.itemId, rate);
+    }
+  };
+
+  const clearPrices = (items: typeof materials) => {
+    for (const m of items) clearPrice(m.itemId);
+  };
+
+  const clearDiscounts = (items: typeof materials) => {
+    for (const m of items) clearMaterialDiscount(m.itemId);
+  };
+
   return (
     <div className={styles.section}>
       <label className={styles.label}>材料清单</label>
       {Object.entries(groupedByCategory).map(([cat, items]) => (
         <div key={cat} style={{ overflowX: 'auto' }}>
-          <h4 className={styles.catTitle}>{categoryNames[cat] || cat}</h4>
+          <div className={styles.catHeader}>
+            <h4 className={styles.catTitle}>{categoryNames[cat] || cat}</h4>
+            <button className={styles.fillBtn} onClick={() => fillPrice(cat, items)}>
+              填充单价
+            </button>
+            <button className={styles.fillBtn} onClick={() => fillDiscount(cat, items)}>
+              填充折扣
+            </button>
+            <button className={styles.fillBtn} onClick={() => clearPrices(items)}>
+              清空单价
+            </button>
+            <button className={styles.fillBtn} onClick={() => clearDiscounts(items)}>
+              清空折扣
+            </button>
+            <div className={styles.toggleRow}>
+              <span>覆盖已有</span>
+              <div
+                className={`${styles.toggle} ${overwriteByCategory[cat] ? styles.toggleOn : ''}`}
+                onClick={() => toggleOverwrite(cat)}
+              >
+                <div className={styles.toggleKnob} />
+              </div>
+            </div>
+          </div>
           <table className={styles.materialTable}>
             <thead>
               <tr>

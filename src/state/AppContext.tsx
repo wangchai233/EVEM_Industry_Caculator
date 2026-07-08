@@ -21,6 +21,7 @@ interface AppState {
 interface AppContextType extends AppState {
   getPrice: (itemId: string) => number | null;
   setPrice: (itemId: string, price: number) => void;
+  clearPrice: (itemId: string) => void;
   createPriceConfig: (name: string) => void;
   deletePriceConfig: (id: string) => void;
   renamePriceConfig: (id: string, name: string) => void;
@@ -130,6 +131,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setConfigs(prev => prev.map(c => {
       if (c.id !== activeId) return c;
       return { ...c, prices: { ...c.prices, [itemId]: price }, updatedAt: new Date().toISOString() };
+    }));
+  }, [activeId, setConfigs]);
+
+  const clearPrice = useCallback((itemId: string) => {
+    setConfigs(prev => prev.map(c => {
+      if (c.id !== activeId) return c;
+      const newPrices = { ...c.prices };
+      delete newPrices[itemId];
+      return { ...c, prices: newPrices, updatedAt: new Date().toISOString() };
     }));
   }, [activeId, setConfigs]);
 
@@ -262,7 +272,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       priceConfigs: configs, activeConfigId: activeId,
       customItems: defaultItems, customBlueprints,
       customReverse, customTreeNodes, customDecoders: defaultDecoders,
-      getPrice, setPrice, createPriceConfig, deletePriceConfig,
+      getPrice, setPrice, clearPrice, createPriceConfig, deletePriceConfig,
       renamePriceConfig, switchConfig, getAllData, importData,
       // 技能
       skillLevels, setSkillLevels, updateSkillLevel, batchSetSkillLevels,

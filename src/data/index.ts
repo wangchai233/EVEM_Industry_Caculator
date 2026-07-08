@@ -15,12 +15,12 @@ export function getItemById(id: string): Item | undefined {
   return itemMap.get(id);
 }
 
-export function getBlueprintById(id: string): Blueprint | undefined {
-  return bpMap.get(id);
+export function getBlueprintById(id: string, custom?: Blueprint[]): Blueprint | undefined {
+  return bpMap.get(id) ?? custom?.find(b => b.id === id);
 }
 
-export function getReverseById(id: string): ReverseEngineeringData | undefined {
-  return revMap.get(id);
+export function getReverseById(id: string, custom?: ReverseEngineeringData[]): ReverseEngineeringData | undefined {
+  return revMap.get(id) ?? custom?.find(r => r.id === id);
 }
 
 export function getDecoderById(id: string): Decoder | undefined {

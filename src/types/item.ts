@@ -18,6 +18,7 @@ export interface Item {
 export interface MaterialEntry {
   itemId: string;
   quantity: number; // 原始基准数量
+  isBase?: boolean; // 是否为基底材料（不受材料效率影响）
 }
 
 // Product 接口扩展（用于产品类型的物品）
