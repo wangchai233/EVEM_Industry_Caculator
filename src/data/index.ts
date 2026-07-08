@@ -31,3 +31,4 @@ export { defaultItems, defaultDecoders, defaultBlueprints, blueprintProducts, de
 export { defaultSkills, defaultSkillLevels, getSkillById } from './skills';
 export { tagTree, resolveTags } from './tags';
 export { defaultFacilities, getFacilityById } from './facilities';
+export { defaultTree, mergeCustomTree } from './productTree';

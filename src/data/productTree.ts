@@ -1,0 +1,57 @@
+import type { ProductTreeNode } from '../types/productTree';
+
+export const defaultTree: ProductTreeNode[] = [
+  {
+    id: 'root_ship', name: '舰船', parentId: null,
+    productIds: [], reverseIds: [],
+    tags: ['ship'], isCustom: false,
+  },
+  {
+    id: 'cat_regular_ship', name: '常规舰船', parentId: 'root_ship',
+    productIds: [], reverseIds: [],
+    tags: ['regular_ship'], isCustom: false,
+  },
+  {
+    id: 'cat_frigate', name: '护卫舰', parentId: 'cat_regular_ship',
+    productIds: [], reverseIds: [],
+    tags: ['frigate'], isCustom: false,
+  },
+  {
+    id: 'cat_caldari_frigate', name: '加达里', parentId: 'cat_frigate',
+    productIds: ['bp_condor_interceptor'], reverseIds: ['rev_condor_interceptor'],
+    tags: ['caldari'], isCustom: false,
+  },
+  {
+    id: 'cat_destroyer', name: '驱逐舰', parentId: 'cat_regular_ship',
+    productIds: [], reverseIds: [],
+    tags: ['destroyer'], isCustom: false,
+  },
+  {
+    id: 'cat_cruiser', name: '巡洋舰', parentId: 'cat_regular_ship',
+    productIds: ['bp_t8_cruiser'], reverseIds: [],
+    tags: ['cruiser'], isCustom: false,
+  },
+  {
+    id: 'cat_battleship', name: '战列舰', parentId: 'cat_regular_ship',
+    productIds: [], reverseIds: [],
+    tags: ['battleship'], isCustom: false,
+  },
+  {
+    id: 'cat_base_battleship', name: '基础战列舰', parentId: 'cat_battleship',
+    productIds: ['bp_t9_bs'], reverseIds: [],
+    tags: [], isCustom: false,
+  },
+  {
+    id: 'root_custom', name: '自定义产品', parentId: null,
+    productIds: [], reverseIds: [],
+    tags: [], isCustom: true,
+  },
+];
+
+// 将自定义节点追加到树中
+export function mergeCustomTree(
+  builtin: ProductTreeNode[],
+  custom: ProductTreeNode[],
+): ProductTreeNode[] {
+  return [...builtin.filter(n => !n.isCustom), ...custom];
+}
