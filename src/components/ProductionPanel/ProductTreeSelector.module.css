@@ -1,4 +1,4 @@
-.section { display: flex; flex-direction: column; gap: 4px; max-height: 400px; overflow-y: auto; }
+.section { display: flex; flex-direction: column; gap: 4px; max-height: 400px; overflow: auto; }
 .label { font-size: 13px; color: var(--color-text-secondary); font-weight: 600; }
 .searchInput {
   background: var(--color-bg); color: var(--color-text);

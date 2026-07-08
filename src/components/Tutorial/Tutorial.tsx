@@ -2,11 +2,19 @@ import { useState } from 'react';
 import styles from './Tutorial.module.css';
 
 export function Tutorial() {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(() => {
+    return localStorage.getItem('evem_tutorial_shown') !== '1';
+  });
+
+  const handleToggle = () => {
+    const next = !show;
+    setShow(next);
+    if (!next) localStorage.setItem('evem_tutorial_shown', '1');
+  };
 
   return (
     <div className={styles.wrapper}>
-      <button className={styles.toggle} onClick={() => setShow(!show)}>
+      <button className={styles.toggle} onClick={handleToggle}>
         {show ? '▼ 隐藏帮助' : '▶ 使用帮助'}
       </button>
       {show && (

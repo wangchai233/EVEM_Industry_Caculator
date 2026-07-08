@@ -15,6 +15,7 @@ function App() {
       <ProductionProvider>
         <SellingProvider>
           <div className={styles.app}>
+            <Tutorial />
             <Header />
             <div className={styles.topBar}>
               <SkillsFacilitiesPanel />
@@ -28,7 +29,6 @@ function App() {
               </div>
             </main>
             <ImportExportBar />
-            <Tutorial />
           </div>
         </SellingProvider>
       </ProductionProvider>
