@@ -70,7 +70,7 @@ export function calculateManufacturing(
 
   // 普通材料
   for (const m of bp.materials) {
-    processMaterial(m.itemId, m.quantity, m.isBase ?? false);
+    processMaterial(m.itemId, m.quantity, false);
   }
 
   // 时间 = 基础 × (1+技能) × (1+设施) × (1+解码器)，乘法

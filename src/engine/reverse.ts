@@ -58,7 +58,7 @@ export function calculateReverse(
       totalQuantity: dc.quantity,
       unitPrice: dcPrice,
       subtotal: dcSubtotal,
-      isBaseMaterial: dc.isBase ?? true,
+      isBaseMaterial: true,
     });
   }
 

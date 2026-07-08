@@ -33,8 +33,8 @@ export function MaterialList() {
   };
 
   const fillPrice = (cat: string, items: typeof materials) => {
-    const firstValue = items.find(m => m.unitPrice !== null)?.unitPrice;
-    if (firstValue === undefined) return;
+    const firstValue = items.find(m => m.unitPrice !== null)?.unitPrice ?? null;
+    if (firstValue === null) return;
     const overwrite = overwriteByCategory[cat] ?? false;
     for (const m of items) {
       if (!overwrite && m.unitPrice !== null) continue;

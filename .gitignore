@@ -41,3 +41,12 @@ Desktop.ini
 
 # Temporary files
 *.tmp
+
+# AI 开发过程文件（不公开）
+.superpowers/
+.trae/
+新要求/
+docs/superpowers/
+
+# 初始需求文档
+EVEM工业计算需求.md
