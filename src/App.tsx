@@ -6,6 +6,7 @@ import { SkillsFacilitiesPanel } from './components/SkillsFacilitiesPanel/Skills
 import { ProductionPanel } from './components/ProductionPanel/ProductionPanel';
 import { SellingPanel } from './components/SellingPanel/SellingPanel';
 import { ImportExportBar } from './components/ImportExportBar/ImportExportBar';
+import { Tutorial } from './components/Tutorial/Tutorial';
 import styles from './App.module.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
               </div>
             </main>
             <ImportExportBar />
+            <Tutorial />
           </div>
         </SellingProvider>
       </ProductionProvider>

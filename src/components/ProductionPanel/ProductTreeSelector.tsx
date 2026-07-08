@@ -41,7 +41,10 @@ export function ProductTreeSelector({ onOpenEditor }: Props) {
   const { state, dispatch } = useProduction();
   const { customBlueprints, customReverse, customTreeNodes } = useApp();
   const [search, setSearch] = useState('');
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
+    const rootIds = defaultTree.filter(n => n.parentId === null).map(n => n.id);
+    return new Set(rootIds);
+  });
 
   const allNodes = useMemo(() => {
     // 将自定义产品挂到自定义分类节点下
@@ -135,16 +138,20 @@ export function ProductTreeSelector({ onOpenEditor }: Props) {
         {isExpanded && (
           <div>
             {node.children.map(renderNode)}
-            {productList.map(bp => (
+            {productList.map(bp => {
+              const displayName = state.projectType === 'manufacturing' && 'productName' in bp
+                ? (bp as any).productName || bp.name
+                : bp.name;
+              return (
               <div
                 key={bp.id}
                 className={`${styles.leafRow} ${selectedId === bp.id ? styles.selected : ''}`}
                 style={{ paddingLeft: (node.depth + 1) * 16 }}
                 onClick={() => handleSelectItem(bp.id)}
               >
-                {bp.isCustom ? '⚙️ ' : ''}{bp.name}
+                {bp.isCustom ? '⚙️ ' : ''}{displayName}
               </div>
-            ))}
+            )})}
             {node.id === 'root_custom' && (
               <div
                 className={styles.addBtn}

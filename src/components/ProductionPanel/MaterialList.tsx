@@ -51,7 +51,7 @@ export function MaterialList() {
                   <tr key={m.itemId} className={m.unitPrice === null ? styles.warning : ''}>
                     <td>
                       {m.itemName}
-                      {m.isBaseMaterial && <span className={styles.tag}>基底</span>}
+                      {m.isBaseMaterial && m.category !== 'decoder' && <span className={styles.tag}>基底</span>}
                     </td>
                     <td>{formatNumber(m.baseQuantity)}</td>
                     <td>{formatNumber(m.adjustedQuantity)}</td>
