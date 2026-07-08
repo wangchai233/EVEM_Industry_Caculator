@@ -2,6 +2,7 @@ import { AppProvider } from './state/AppContext';
 import { ProductionProvider } from './state/ProductionContext';
 import { SellingProvider } from './state/SellingContext';
 import { Header } from './components/Header/Header';
+import { SkillsFacilitiesPanel } from './components/SkillsFacilitiesPanel/SkillsFacilitiesPanel';
 import { ProductionPanel } from './components/ProductionPanel/ProductionPanel';
 import { SellingPanel } from './components/SellingPanel/SellingPanel';
 import { ImportExportBar } from './components/ImportExportBar/ImportExportBar';
@@ -14,6 +15,9 @@ function App() {
         <SellingProvider>
           <div className={styles.app}>
             <Header />
+            <div className={styles.topBar}>
+              <SkillsFacilitiesPanel />
+            </div>
             <main className={styles.main}>
               <div className={styles.panel}>
                 <ProductionPanel />

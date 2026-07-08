@@ -21,6 +21,10 @@
   min-width: 0;
 }
 
+.topBar {
+  padding: var(--gap) var(--gap) 0;
+}
+
 @media (max-width: 767px) {
   .main {
     flex-direction: column;

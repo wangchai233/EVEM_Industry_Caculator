@@ -1,0 +1,247 @@
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-bottom: var(--gap);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  border-radius: var(--radius);
+}
+
+.toggle:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.toggleIcon {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  width: 12px;
+}
+
+.body {
+  padding: 0 16px 16px;
+}
+
+.section {
+  margin-bottom: 16px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-text);
+}
+
+.hint {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+.select {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+/* ── 技能行 ── */
+.skillRow {
+  margin-bottom: 12px;
+  padding: 8px;
+  background: var(--color-bg);
+  border-radius: var(--radius);
+}
+
+.skillRow:last-child {
+  margin-bottom: 0;
+}
+
+.skillHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.skillName {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.skillDigits {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 2px;
+}
+
+/* ── 滑块行 ── */
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.sliderRow:last-child {
+  margin-bottom: 0;
+}
+
+.tierLabel {
+  width: 36px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.slider {
+  flex: 1;
+  height: 4px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.sliderValue {
+  width: 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-primary);
+}
+
+/* ── 自定义加成网格 ── */
+.bonusGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.bonusItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bonusLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.numberInput {
+  width: 100%;
+  padding: 4px 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+.numberInput:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+/* ── 加成汇总 ── */
+.summaryGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.summaryLabel {
+  width: 72px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.summarySkill {
+  width: 90px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-warning);
+}
+
+.summaryFacility {
+  width: 90px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-success);
+  margin-right: auto;
+}
+
+.summaryTotal {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+/* ── 技能明细折叠 ── */
+.breakdownDetails {
+  margin-top: 10px;
+  padding: 8px;
+  background: var(--color-bg);
+  border-radius: var(--radius);
+}
+
+.breakdownToggle {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.breakdownItem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 4px 0 4px 8px;
+  font-size: 12px;
+  border-left: 2px solid var(--color-border);
+  margin-top: 6px;
+}
+
+.breakdownName {
+  font-weight: 500;
+  color: var(--color-text);
+  width: 100%;
+}
+
+.breakdownEffect {
+  font-family: var(--font-mono);
+  color: var(--color-warning);
+}
