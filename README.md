@@ -153,5 +153,3 @@ npm run preview
 
 GPL
 
-
-[def]: [https://wangchai233.github.io/EVEM_Industry_Caculator/](https://wangchai233.github.io/EVEM_Industry_Caculator/)""
