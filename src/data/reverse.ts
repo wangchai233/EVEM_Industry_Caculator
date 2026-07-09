@@ -1,6 +1,7 @@
 import type { ReverseEngineeringData } from '../types';
 
 export const defaultReverse: ReverseEngineeringData[] = [
+  /*
   {
     id: 'rev_t9_bs',
     name: 'T9 战列舰蓝图',
@@ -16,6 +17,8 @@ export const defaultReverse: ReverseEngineeringData[] = [
     ],
     tags: ['ship', 'regular_ship', 'battleship'],
   },
+  */
+  /*
   {
     id: 'rev_t8_cruiser',
     name: 'T8 巡洋舰蓝图',
@@ -31,12 +34,13 @@ export const defaultReverse: ReverseEngineeringData[] = [
     ],
     tags: ['ship', 'regular_ship', 'cruiser'],
   },
+  */
   // v2 秃鹫级截击型逆向工程
   {
     id: 'rev_condor_interceptor',
     name: '秃鹫级截击型蓝图',
     targetBlueprintId: 'bp_condor_interceptor',
-    baseItemId: 'damaged_caldari8',
+    baseItemId: 'damaged_caldari_8',
     baseItemName: '加达里 8 级受损结构',
     maxItemCount: 1,
     maxBaseSuccessRate: 0.50,
