@@ -34,15 +34,22 @@ export function ProductSelector() {
         onChange={e => setSearch(e.target.value)}
       />
       <div className={styles.selectList}>
-        {filtered.map(item => (
-          <div
-            key={item.id}
-            className={`${styles.selectItem} ${selectedId === item.id ? styles.selected : ''}`}
-            onClick={() => handleSelect(item.id)}
-          >
-            {item.name}
-          </div>
-        ))}
+        {filtered.length > 0 ? (
+          filtered.map(item => (
+            <div
+              key={item.id}
+              className={`${styles.selectItem} ${selectedId === item.id ? styles.selected : ''}`}
+              onClick={() => handleSelect(item.id)}
+            >
+              {item.name}
+            </div>
+          ))
+        ) : (
+          <div className={styles.selectItem} style={{ color: 'var(--color-text-secondary)' }}>无匹配结果</div>
+        )}
+      </div>
+      <div className={styles.info}>
+        从 {items.length} 个产品中搜索到 {filtered.length} 个结果
       </div>
     </div>
   );

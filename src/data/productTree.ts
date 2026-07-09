@@ -1,6 +1,14 @@
 import type { ProductTreeNode } from '../types/productTree';
 
 export const defaultTree: ProductTreeNode[] = [
+  /*
+  示例格式：
+  {
+    id: '', name: '', parentId: null,
+    productIds: [], reverseIds: [],
+    tags: [], isCustom: false,
+  }
+  */
   {
     id: 'root_ship', name: '舰船', parentId: null,
     productIds: [], reverseIds: [],
@@ -17,9 +25,9 @@ export const defaultTree: ProductTreeNode[] = [
     tags: ['frigate'], isCustom: false,
   },
   {
-    id: 'cat_caldari_frigate', name: '加达里', parentId: 'cat_frigate',
+    id: 'cat_intercepter_frigate', name: '截击护卫舰', parentId: 'cat_frigate',
     productIds: ['bp_condor_interceptor'], reverseIds: ['rev_condor_interceptor'],
-    tags: ['caldari'], isCustom: false,
+    tags: ['frigate_intercepter'], isCustom: false,
   },
   {
     id: 'cat_destroyer', name: '驱逐舰', parentId: 'cat_regular_ship',
@@ -30,6 +38,11 @@ export const defaultTree: ProductTreeNode[] = [
     id: 'cat_cruiser', name: '巡洋舰', parentId: 'cat_regular_ship',
     productIds: ['bp_t8_cruiser'], reverseIds: [],
     tags: ['cruiser'], isCustom: false,
+  },
+  {
+    id: 'cat_battlecruiser', name: '战列巡洋舰', parentId: 'cat_regular_ship',
+    productIds: [], reverseIds: [],
+    tags: ['battlecruiser'], isCustom: false,
   },
   {
     id: 'cat_battleship', name: '战列舰', parentId: 'cat_regular_ship',

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useProduction } from '../../state/ProductionContext';
 import { useApp } from '../../state/AppContext';
 import { getBlueprintById, getReverseById, getDecoderById } from '../../data';
+import { getFacilityById } from '../../data/facilities';
 import { defaultSkills } from '../../data/skills';
 import { calculateManufacturing } from '../../engine/manufacturing';
 import { calculateReverse } from '../../engine/reverse';
@@ -18,7 +19,7 @@ import styles from './ProductionPanel.module.css';
 
 export function ProductionPanel() {
   const { state, dispatch } = useProduction();
-  const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse } = useApp();
+  const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, activeFacilityId } = useApp();
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<{ id: string; mode: 'mfg' | 'rev' } | null>(null);
@@ -43,6 +44,8 @@ export function ProductionPanel() {
     : undefined;
 
   useEffect(() => {
+    const activeFacility = activeFacilityId ? getFacilityById(activeFacilityId) : undefined;
+
     if (state.projectType === 'manufacturing') {
       const bp = getBlueprintById(state.manufacturing.blueprintId, customBlueprints);
       if (!bp) { dispatch({ type: 'SET_RESULT', payload: null }); return; }
@@ -50,7 +53,7 @@ export function ProductionPanel() {
         ? getDecoderById(state.manufacturing.decoderId)
         : undefined;
       const productTags = bp.tags;
-      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder, 'mfg');
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, activeFacility, customFacility, decoder, 'mfg');
 
       // 全局覆盖：skills.ME 在引擎中会被 1.5 − skills.ME，所以要设成 1.5 − target
       // TE 引擎用 1+skills.TE，所以要设成 targetTE − 1
@@ -76,7 +79,7 @@ export function ProductionPanel() {
         ? getDecoderById(state.reverse.decoderId)
         : undefined;
       const productTags = rev.tags;
-      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, undefined, customFacility, decoder, 'rev');
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, activeFacility, customFacility, decoder, 'rev');
 
       if (globalOverrides.enabled) {
         bonuses.skills.materialEfficiency = 1.5 - globalOverrides.materialEfficiency;
@@ -93,7 +96,7 @@ export function ProductionPanel() {
       const result = calculateReverse(state.reverse, rev, decoder, getPriceWithIgnore, bonuses, roundQuantities);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, ignoreUnsetPrice, roundQuantities]);
+  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, ignoreUnsetPrice, roundQuantities, activeFacilityId]);
 
   return (
     <div className={styles.panel}>
@@ -113,7 +116,7 @@ export function ProductionPanel() {
           </div>
         </div>
         <div className={styles.toggleRow}>
-          <span>材料取整</span>
+          <span>材料数量取整（建议保持开启）</span>
           <div
             className={`${styles.toggle} ${roundQuantities ? styles.toggleOn : ''}`}
             onClick={() => setRoundQuantities(!roundQuantities)}

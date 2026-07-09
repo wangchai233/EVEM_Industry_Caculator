@@ -68,7 +68,7 @@ export const defaultBlueprints: Blueprint[] = [
       { itemId: 'zydrine', quantity: 4448 },
       { itemId: 'megacyte', quantity: 1812 },
     ],
-    tags: ['ship', 'regular_ship', 'frigate', 'caldari', 'interceptor'],
+    tags: ['ship', 'regular_ship', 'frigate', 'interceptor_frigate'],
   },
 ];
 

@@ -84,7 +84,7 @@ export function MaterialList() {
               清空折扣
             </button>
             <div className={styles.toggleRow}>
-              <span>覆盖已有</span>
+              <span>填充覆盖已有数据</span>
               <div
                 className={`${styles.toggle} ${overwriteByCategory[cat] ? styles.toggleOn : ''}`}
                 onClick={() => toggleOverwrite(cat)}

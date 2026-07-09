@@ -12,11 +12,14 @@ export const tagTree: TagNode[] = [
   { id: 'cruiser', name: '巡洋舰', parentTags: ['ship', 'regular_ship'] },
   { id: 'battlecruiser', name: '战列巡洋舰', parentTags: ['ship', 'regular_ship'] },
   { id: 'battleship', name: '战列舰', parentTags: ['ship', 'regular_ship'] },
+  { id: 'frigate_intercepter', name: '截击护卫舰', parentTags: ['ship', 'regular_ship', 'frigate']},
+  /*
   { id: 'caldari', name: '加达里', parentTags: [] },
   { id: 'gallente', name: '盖伦特', parentTags: [] },
   { id: 'amarr', name: '艾玛', parentTags: [] },
   { id: 'minmatar', name: '米玛塔尔', parentTags: [] },
   { id: 'interceptor', name: '截击型', parentTags: [] },
+   */
 ];
 
 // 计算节点的完整标签列表（含继承）

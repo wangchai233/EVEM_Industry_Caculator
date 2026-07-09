@@ -94,6 +94,15 @@ export function ProductTreeSelector({ onOpenEditor, onEditProduct }: Props) {
 
   const visibleExpanded = getVisibleExpanded();
 
+  // 搜索反馈：统计总产品数和匹配数
+  const totalProductCount = allItems.length;
+  const matchingProductCount = searchLower
+    ? allItems.filter(bp => {
+        const dn = isMfg ? (bp as any).productName || bp.name : bp.name;
+        return dn.toLowerCase().includes(searchLower);
+      }).length
+    : totalProductCount;
+
   const toggleExpand = (id: string) => {
     setExpandedIds(prev => {
       const next = new Set(prev);
@@ -204,6 +213,11 @@ export function ProductTreeSelector({ onOpenEditor, onEditProduct }: Props) {
         onChange={e => setSearch(e.target.value)}
       />
       <div className={styles.tree}>
+        {searchLower && (
+          <div className={styles.searchInfo}>
+            从 {totalProductCount} 个产品中搜索到 {matchingProductCount} 个结果
+          </div>
+        )}
         {getChildren(null).map(n => renderNode(n, 0))}
       </div>
     </div>

@@ -163,7 +163,7 @@ export function SkillsFacilitiesPanel() {
 
           {/* ── 设施配置 ── */}
           <div className={styles.section}>
-            <label className={styles.label}>设施</label>
+            <label className={styles.label}>设施（正常运行时加成；暂不支持军团科技）</label>
             <select
               className={styles.select}
               value={activeFacilityId}
