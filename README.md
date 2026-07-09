@@ -1,3 +1,7 @@
+# 在线访问
+
+[在线访问 EVEM 工业计算器](https://wangchai233.github.io/EVEM_Industry_Caculator/"")
+
 # EVEM 工业计算器
 
 面向《星战前夜：无烬星河》(EVE Echoes) 的工业制造与逆向工程利润计算器。
@@ -20,11 +24,11 @@ React 19 · TypeScript · Vite 7 · KaTeX · CSS Modules
 
 ```bash
 npm install
-npm run dev      # 开发模式，默认 http://localhost:5173
-npm run build    # 构建生产版本
-npm run preview  # 预览生产构建
+npm run dev      # 默认 http://localhost:5173
+npm run build
+npm run preview
 ```
 
 ## 许可证
 
-MIT
+GPL

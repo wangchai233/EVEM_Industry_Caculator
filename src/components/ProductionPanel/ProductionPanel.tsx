@@ -23,6 +23,7 @@ export function ProductionPanel() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<{ id: string; mode: 'mfg' | 'rev' } | null>(null);
   const [ignoreUnsetPrice, setIgnoreUnsetPrice] = useState(false);
+  const [roundQuantities, setRoundQuantities] = useState(true);
   const handleCloseEditor = () => { setEditorOpen(false); setEditTarget(null); };
 
   const getPriceWithIgnore = (itemId: string): number | null => {
@@ -66,7 +67,7 @@ export function ProductionPanel() {
       }
 
       const discountWrapper = (itemId: string) => getDiscount(itemId, 'buy');
-      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPriceWithIgnore, bonuses, discountWrapper);
+      const result = calculateManufacturing(state.manufacturing, bp, decoder, getPriceWithIgnore, bonuses, discountWrapper, roundQuantities);
       dispatch({ type: 'SET_RESULT', payload: result });
     } else {
       const rev = getReverseById(state.reverse.reverseId, customReverse);
@@ -89,10 +90,10 @@ export function ProductionPanel() {
         bonuses.decoder.successRate = 0;
       }
 
-      const result = calculateReverse(state.reverse, rev, decoder, getPriceWithIgnore, bonuses);
+      const result = calculateReverse(state.reverse, rev, decoder, getPriceWithIgnore, bonuses, roundQuantities);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, ignoreUnsetPrice]);
+  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, ignoreUnsetPrice, roundQuantities]);
 
   return (
     <div className={styles.panel}>
@@ -107,6 +108,15 @@ export function ProductionPanel() {
           <div
             className={`${styles.toggle} ${ignoreUnsetPrice ? styles.toggleOn : ''}`}
             onClick={() => setIgnoreUnsetPrice(!ignoreUnsetPrice)}
+          >
+            <div className={styles.toggleKnob} />
+          </div>
+        </div>
+        <div className={styles.toggleRow}>
+          <span>材料取整</span>
+          <div
+            className={`${styles.toggle} ${roundQuantities ? styles.toggleOn : ''}`}
+            onClick={() => setRoundQuantities(!roundQuantities)}
           >
             <div className={styles.toggleKnob} />
           </div>

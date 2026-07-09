@@ -7,6 +7,11 @@ import { getItemById } from '../data';
 type PriceGetter = (itemId: string) => number | null;
 type DiscountGetter = (itemId: string) => number | null; // 返回折扣率（如 0.8 = 8折）
 
+const roundByCategory = (qty: number, category: string): number => {
+  if (category === 'ship') return Math.ceil(qty);
+  return Math.round(qty);
+};
+
 export function calculateManufacturing(
   config: ManufacturingConfig,
   bp: Blueprint,
@@ -14,6 +19,7 @@ export function calculateManufacturing(
   getPrice: PriceGetter,
   bonuses: BonusLayers = EMPTY_BONUS,
   getDiscount?: DiscountGetter,
+  roundQuantities = true,
 ): ProductionResult {
   const materials: ProductionResult['materials'] = [];
   let totalMaterialCost: number | null = 0;
@@ -25,8 +31,13 @@ export function calculateManufacturing(
 
   const processMaterial = (itemId: string, baseQty: number, isBase: boolean) => {
     const item = getItemById(itemId);
-    const adjustedQty = isBase ? baseQty : baseQty * finalME;
-    const totalQty = adjustedQty * config.runs;
+    const cat = item?.category ?? 'mineral';
+    let adjustedQty = isBase ? baseQty : baseQty * finalME;
+    let totalQty = adjustedQty * config.runs;
+    if (roundQuantities) {
+      adjustedQty = roundByCategory(adjustedQty, cat);
+      totalQty = roundByCategory(totalQty, cat);
+    }
     const rawPrice = getPrice(itemId);
     const discount = getDiscount?.(itemId);
     const unitPrice = rawPrice !== null ? rawPrice * (discount ?? 1) : rawPrice;
@@ -37,7 +48,7 @@ export function calculateManufacturing(
 
     materials.push({
       itemId, itemName: item?.name ?? itemId,
-      category: item?.category ?? 'mineral',
+      category: cat,
       baseQuantity: baseQty, adjustedQuantity: adjustedQty,
       totalQuantity: totalQty, unitPrice, subtotal,
       isBaseMaterial: isBase,

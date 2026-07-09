@@ -26,6 +26,7 @@ export function MaterialList() {
     decoder: '解码器',
     damaged_structure: '基底材料',
     blueprint: '蓝图',
+    ship: '舰船',
   };
 
   const toggleOverwrite = (cat: string) => {

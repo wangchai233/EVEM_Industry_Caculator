@@ -5,12 +5,18 @@ import { getItemById } from '../data';
 
 type PriceGetter = (itemId: string) => number | null;
 
+const roundByCategory = (qty: number, category: string): number => {
+  if (category === 'ship') return Math.ceil(qty);
+  return Math.round(qty);
+};
+
 export function calculateReverse(
   config: ReverseEngineeringConfig,
   revData: ReverseEngineeringData,
   decoder: Decoder | undefined,
   getPrice: PriceGetter,
   bonuses: BonusLayers,
+  roundQuantities = true,
 ): ProductionResult & { successRate: number; expectedCost: number | null } {
   const materials: ProductionResult['materials'] = [];
   let totalMaterialCost: number | null = 0;
@@ -46,7 +52,9 @@ export function calculateReverse(
   for (const dc of revData.dataCores) {
     const dcItem = getItemById(dc.itemId);
     const dcPrice = getPrice(dc.itemId);
-    const dcSubtotal = dcPrice !== null ? dcPrice * dc.quantity : null;
+    const rawQty = dc.quantity;
+    const qty = roundQuantities ? roundByCategory(rawQty, 'data_core') : rawQty;
+    const dcSubtotal = dcPrice !== null ? dcPrice * qty : null;
     if (dcSubtotal === null) totalMaterialCost = null;
     else if (totalMaterialCost !== null) totalMaterialCost += dcSubtotal;
     materials.push({
@@ -54,11 +62,11 @@ export function calculateReverse(
       itemName: dcItem?.name ?? dc.itemId,
       category: 'data_core',
       baseQuantity: dc.quantity,
-      adjustedQuantity: dc.quantity,
-      totalQuantity: dc.quantity,
+      adjustedQuantity: qty,
+      totalQuantity: qty,
       unitPrice: dcPrice,
       subtotal: dcSubtotal,
-      isBaseMaterial: true,
+      isBaseMaterial: dc.isBase ?? true,
     });
   }
 

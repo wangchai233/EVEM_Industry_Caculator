@@ -6,6 +6,7 @@ export type ItemCategory =
   | 'blueprint'
   | 'damaged_structure'
   | 'product'
+  | 'ship'
   | 'isk';
 
 export interface Item {
