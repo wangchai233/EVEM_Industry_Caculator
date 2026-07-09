@@ -58,7 +58,7 @@ export const defaultBlueprints: Blueprint[] = [
       { itemId: 'sparkle_alloy', quantity: 6642 },
       { itemId: 'precision_alloy', quantity: 5898 },
       { itemId: 'fiber_composite', quantity: 7526 },
-      { itemId: 'noble_metals', quantity: 7526 },
+      { itemId: 'noble_metal', quantity: 7526 },
       { itemId: 'reactive_metal', quantity: 1872 },
       { itemId: 'tritanium', quantity: 2467871 },
       { itemId: 'pyerite', quantity: 854016 },

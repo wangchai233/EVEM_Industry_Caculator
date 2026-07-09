@@ -31,12 +31,13 @@ export function Tutorial() {
           </ol>
           <p><strong>计算公式说明：</strong></p>
           <ul>
-            <li>材料效率 = 150% − 技能加成 − 设施加成 + 解码器加成（技能"加材料效率"=更省料）</li>
+            <li>材料效率 = 150% − 技能加成 − 设施加成 + 解码器加成</li>
             <li>时间消耗 = 基础时间 × (1+技能) × (1+设施) × (1+解码器)</li>
             <li>成功率 = 基础成功率 × (1+技能+设施+解码器)，上限 100%</li>
             <li>现金费用 = 基础费用 × (1+技能) × 流程数</li>
             <li>折扣优先级：手动覆写 &gt; 材料清单 &gt; 全局规则</li>
           </ul>
+          <a href="https://github.com/wangchai233/EVEM_Industry_Caculator">详见项目README文档（将跳转GitHub）</a>
         </div>
       )}
     </div>
