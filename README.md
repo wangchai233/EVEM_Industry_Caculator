@@ -1,5 +1,5 @@
 # 在线访问
-[在线访问 EVEM 工业计算器]([https://wangchai233.github.io/EVEM_Industry_Caculator/](https://wangchai233.github.io/EVEM_Industry_Caculator/)"")
+[在线访问EVEM工业计算器](https://wangchai233.github.io/EVEM_Industry_Caculator/)
 
 # EVEM 工业计算器
 **EVEM 工业计算器**（EVEM Industry Caculator）是为《星战前夜：无烬星河》手游（EVE 手游）玩家提供工业制造和逆向工程投入产出比计算的工具。
@@ -152,3 +152,6 @@ npm run preview
 ## 许可证
 
 GPL
+
+
+[def]: [https://wangchai233.github.io/EVEM_Industry_Caculator/](https://wangchai233.github.io/EVEM_Industry_Caculator/)""
