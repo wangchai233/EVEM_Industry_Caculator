@@ -13,7 +13,7 @@ interface AppState {
   customTreeNodes: ProductTreeNode[];
   customDecoders: typeof defaultDecoders;
   skillLevels: SkillLevels;
-  activeFacilityId: string;
+  activeFacilityIds: string[];
   customFacility: CustomFacilityBonus;
   discountRules: DiscountRule[];
 }
@@ -33,7 +33,8 @@ interface AppContextType extends AppState {
   updateSkillLevel: (skillId: string, tier: 0 | 1 | 2, level: number) => void;
   batchSetSkillLevels: (preset: string) => void;
   // 设施相关
-  setActiveFacilityId: (id: string | ((prev: string) => string)) => void;
+  setActiveFacilityIds: (ids: string[] | ((prev: string[]) => string[])) => void;
+  toggleFacility: (id: string) => void;
   setCustomFacility: (bonus: CustomFacilityBonus | ((prev: CustomFacilityBonus) => CustomFacilityBonus)) => void;
   // 折扣相关
   setDiscountRules: (rules: DiscountRule[] | ((prev: DiscountRule[]) => DiscountRule[])) => void;
@@ -75,7 +76,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [skillLevels, setSkillLevels] = useLocalStorage<SkillLevels>('evem_skill_levels', defaultSkillLevels);
 
   // 设施状态
-  const [activeFacilityId, setActiveFacilityId] = useLocalStorage<string>('evem_active_facility', '');
+  const [activeFacilityIds, setActiveFacilityIds] = useLocalStorage<string[]>('evem_active_facilities', []);
+
+  const toggleFacility = useCallback((id: string) => {
+    setActiveFacilityIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  }, [setActiveFacilityIds]);
   const [customFacility, setCustomFacility] = useLocalStorage<CustomFacilityBonus>('evem_custom_facility', {
     materialEfficiency: 0,
     timeEfficiency: 0,
@@ -277,7 +282,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // 技能
       skillLevels, setSkillLevels, updateSkillLevel, batchSetSkillLevels,
       // 设施
-      activeFacilityId, setActiveFacilityId, customFacility, setCustomFacility,
+      activeFacilityIds, setActiveFacilityIds, toggleFacility, customFacility, setCustomFacility,
       // 折扣
       discountRules, setDiscountRules, addDiscountRule, removeDiscountRule, getDiscount,
       // 材料折扣覆写

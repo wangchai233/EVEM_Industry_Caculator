@@ -12,6 +12,7 @@ export interface SkillTier {
 export interface SkillDef {
   id: string;
   name: string;
+  category?: string; // 技能分类，如 '工业技术'、'应用科学'
   skillType: 'mfg' | 'rev' | 'both'; // 技能类型：制造/逆向工程/通用
   matchTags: string[];      // 匹配的产品标签 ID 列表
   base: SkillTier;           // 基础阶段

@@ -19,7 +19,7 @@ import styles from './ProductionPanel.module.css';
 
 export function ProductionPanel() {
   const { state, dispatch } = useProduction();
-  const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, activeFacilityId } = useApp();
+  const { getPrice, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, activeFacilityIds } = useApp();
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<{ id: string; mode: 'mfg' | 'rev' } | null>(null);
@@ -44,7 +44,7 @@ export function ProductionPanel() {
     : undefined;
 
   useEffect(() => {
-    const activeFacility = activeFacilityId ? getFacilityById(activeFacilityId) : undefined;
+    const activeFacilities = activeFacilityIds.map(id => getFacilityById(id)).filter((f): f is NonNullable<typeof f> => f != null);
 
     if (state.projectType === 'manufacturing') {
       const bp = getBlueprintById(state.manufacturing.blueprintId, customBlueprints);
@@ -53,7 +53,7 @@ export function ProductionPanel() {
         ? getDecoderById(state.manufacturing.decoderId)
         : undefined;
       const productTags = bp.tags;
-      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, activeFacility, customFacility, decoder, 'mfg');
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, activeFacilities, customFacility, decoder, 'mfg');
 
       // 全局覆盖：skills.ME 在引擎中会被 1.5 − skills.ME，所以要设成 1.5 − target
       // TE 引擎用 1+skills.TE，所以要设成 targetTE − 1
@@ -79,7 +79,7 @@ export function ProductionPanel() {
         ? getDecoderById(state.reverse.decoderId)
         : undefined;
       const productTags = rev.tags;
-      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, activeFacility, customFacility, decoder, 'rev');
+      let bonuses = resolveBonuses(productTags, defaultSkills, skillLevels, activeFacilities, customFacility, decoder, 'rev');
 
       if (globalOverrides.enabled) {
         bonuses.skills.materialEfficiency = 1.5 - globalOverrides.materialEfficiency;
@@ -96,7 +96,7 @@ export function ProductionPanel() {
       const result = calculateReverse(state.reverse, rev, decoder, getPriceWithIgnore, bonuses, roundQuantities);
       dispatch({ type: 'SET_RESULT', payload: result });
     }
-  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, ignoreUnsetPrice, roundQuantities, activeFacilityId]);
+  }, [state.manufacturing, state.reverse, state.projectType, getPrice, dispatch, skillLevels, customFacility, getDiscount, globalOverrides, customBlueprints, customReverse, ignoreUnsetPrice, roundQuantities, activeFacilityIds]);
 
   return (
     <div className={styles.panel}>

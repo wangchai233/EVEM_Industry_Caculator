@@ -38,19 +38,17 @@ function computeBonusSummary(
     const levels = skillLevels[def.id] ?? [0, 0, 0];
     const accum: Record<string, number> = {};
 
-    // ME / SR / costMultiplier 加法叠加
     const addEffects = (tier: typeof def.base, level: number) => {
       if (level > 0 && level <= tier.effects.length) {
         const eff = tier.effects[level - 1];
         for (const [key, val] of Object.entries(eff)) {
-          if (key === 'timeEfficiency') continue; // TE 单独乘法处理
+          if (key === 'timeEfficiency') continue;
           accum[key] = (accum[key] ?? 0) + val;
           (skills as any)[key] = ((skills as any)[key] ?? 0) + val;
         }
       }
     };
 
-    // TE 三阶段乘法叠加
     let teBase = 1, teAdv = 1, teExp = 1;
     if (levels[0] > 0 && levels[0] <= def.base.effects.length)
       teBase = 1 + (def.base.effects[levels[0] - 1].timeEfficiency ?? 0);
@@ -86,15 +84,33 @@ export function SkillsFacilitiesPanel() {
     skillLevels,
     updateSkillLevel,
     batchSetSkillLevels,
-    activeFacilityId,
-    setActiveFacilityId,
+    activeFacilityIds,
+    toggleFacility,
     customFacility,
     setCustomFacility,
   } = useApp();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [facilitiesExpanded, setFacilitiesExpanded] = useState(false);
+
+  const toggleCategory = (cat: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat); else next.add(cat);
+      return next;
+    });
+  };
 
   const bonus = computeBonusSummary(skillLevels, customFacility);
+
+  // 技能分组
+  const skillGroups = defaultSkills.reduce<Record<string, typeof defaultSkills>>((acc, s) => {
+    const cat = s.category ?? '其他';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(s);
+    return acc;
+  }, {});
 
   return (
     <div className={styles.panel}>
@@ -129,58 +145,86 @@ export function SkillsFacilitiesPanel() {
             </select>
           </div>
 
-          {/* ── 技能等级滑块 ── */}
+          {/* ── 技能分类折叠 ── */}
           <div className={styles.section}>
             <label className={styles.label}>技能等级</label>
-            {defaultSkills.map(skill => {
-              const levels = skillLevels[skill.id] ?? [0, 0, 0];
-              const digits = `${levels[0]}${levels[1]}${levels[2]}`;
+            {Object.entries(skillGroups).map(([cat, skills]) => {
+              const isExpanded = expandedCategories.has(cat);
               return (
-                <div key={skill.id} className={styles.skillRow}>
-                  <div className={styles.skillHeader}>
-                    <span className={styles.skillName}>{skill.name}</span>
-                    <span className={styles.skillDigits}>{digits}</span>
+                <div key={cat} className={styles.skillGroup}>
+                  <div
+                    className={styles.skillGroupHeader}
+                    onClick={() => toggleCategory(cat)}
+                  >
+                    <span className={styles.skillGroupArrow}>{isExpanded ? '▼' : '▶'}</span>
+                    <span className={styles.skillGroupName}>{cat} ({skills.length})</span>
                   </div>
-                  {[0, 1, 2].map(tier => (
-                    <div key={tier} className={styles.sliderRow}>
-                      <span className={styles.tierLabel}>{TIER_LABELS[tier]}</span>
-                      <input
-                        type="range"
-                        min={0}
-                        max={5}
-                        step={1}
-                        value={levels[tier]}
-                        onChange={(e) => updateSkillLevel(skill.id, tier as 0 | 1 | 2, +e.target.value)}
-                        className={styles.slider}
-                      />
-                      <span className={styles.sliderValue}>{levels[tier]}</span>
+                  {isExpanded && (
+                    <div className={styles.skillGroupBody}>
+                      {skills.map(skill => {
+                        const levels = skillLevels[skill.id] ?? [0, 0, 0];
+                        const digits = `${levels[0]}${levels[1]}${levels[2]}`;
+                        return (
+                          <div key={skill.id} className={styles.skillRow}>
+                            <div className={styles.skillHeader}>
+                              <span className={styles.skillName}>{skill.name}</span>
+                              <span className={styles.skillDigits}>{digits}</span>
+                            </div>
+                            {[0, 1, 2].map(tier => (
+                              <div key={tier} className={styles.sliderRow}>
+                                <span className={styles.tierLabel}>{TIER_LABELS[tier]}</span>
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={5}
+                                  step={1}
+                                  value={levels[tier]}
+                                  onChange={(e) => updateSkillLevel(skill.id, tier as 0 | 1 | 2, +e.target.value)}
+                                  className={styles.slider}
+                                />
+                                <span className={styles.sliderValue}>{levels[tier]}</span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
+                  )}
                 </div>
               );
             })}
           </div>
 
-          {/* ── 设施配置 ── */}
+          {/* ── 设施多选 ── */}
           <div className={styles.section}>
-            <label className={styles.label}>设施（正常运行时加成；暂不支持军团科技）</label>
-            <select
-              className={styles.select}
-              value={activeFacilityId}
-              onChange={(e) => setActiveFacilityId(e.target.value)}
+            <div
+              className={styles.skillGroupHeader}
+              onClick={() => setFacilitiesExpanded(!facilitiesExpanded)}
             >
-              <option value="">不使用设施（自定义加成）</option>
-              {defaultFacilities.map(f => (
-                <option key={f.id} value={f.id}>{f.name}</option>
-              ))}
-            </select>
+              <span className={styles.skillGroupArrow}>{facilitiesExpanded ? '▼' : '▶'}</span>
+              <span className={styles.skillGroupName}>设施 ({defaultFacilities.length})</span>
+            </div>
+            {facilitiesExpanded && (
+              <div className={styles.skillGroupBody}>
+                {defaultFacilities.map(f => (
+                  <label key={f.id} className={styles.facilityRow}>
+                    <input
+                      type="checkbox"
+                      checked={activeFacilityIds.includes(f.id)}
+                      onChange={() => toggleFacility(f.id)}
+                    />
+                    <span>{f.name}</span>
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* ── 自定义设施加成 ── */}
           <div className={styles.section}>
             <label className={styles.label}>
               自定义设施加成
-              <span className={styles.hint}>（仅在选择"不使用设施"时生效）</span>
+              <span className={styles.hint}>（对所有产品生效，与选中设施叠加）</span>
             </label>
             <div className={styles.bonusGrid}>
               {([

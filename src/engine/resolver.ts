@@ -13,7 +13,7 @@ export function resolveBonuses(
   productTags: string[],
   allSkills: SkillDef[],
   skillLevels: Record<string, [number, number, number]>,
-  activeFacility: FacilityDef | undefined,
+  activeFacilities: FacilityDef[],
   customFacility: CustomFacilityBonus,
   decoder: DecoderLike | undefined,
   projectType: 'mfg' | 'rev',
@@ -79,14 +79,14 @@ export function resolveBonuses(
   }
 
   // 设施加成
-  if (activeFacility) {
-    const hasMatch = activeFacility.matchTags.length === 0 ||
-      activeFacility.matchTags.some(t => productTags.includes(t));
+  for (const facility of activeFacilities) {
+    const hasMatch = facility.matchTags.length === 0 ||
+      facility.matchTags.some(t => productTags.includes(t));
     if (hasMatch) {
-      result.facilities.materialEfficiency = activeFacility.materialEfficiency ?? 0;
-      result.facilities.timeEfficiency = activeFacility.timeEfficiency ?? 0;
-      result.facilities.successRate = activeFacility.successRate ?? 0;
-      result.facilities.costMultiplier = activeFacility.costMultiplier ?? 0;
+      result.facilities.materialEfficiency += facility.materialEfficiency ?? 0;
+      result.facilities.timeEfficiency += facility.timeEfficiency ?? 0;
+      result.facilities.successRate += facility.successRate ?? 0;
+      result.facilities.costMultiplier += facility.costMultiplier ?? 0;
     }
   }
 
