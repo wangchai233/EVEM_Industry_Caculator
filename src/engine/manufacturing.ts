@@ -32,7 +32,9 @@ export function calculateManufacturing(
   const processMaterial = (itemId: string, baseQty: number, isBase: boolean) => {
     const item = getItemById(itemId);
     const cat = item?.category ?? 'mineral';
-    let adjustedQty = isBase ? baseQty : baseQty * finalME;
+    // 基准：100% ME — 蓝图存储的是 150% ME 值，需要 /1.5
+    const trueBaseQty = isBase ? baseQty : baseQty / 1.5;
+    let adjustedQty = isBase ? trueBaseQty : trueBaseQty * finalME;
     let totalQty = adjustedQty * config.runs;
     if (roundQuantities) {
       adjustedQty = roundByCategory(adjustedQty, cat);
@@ -49,7 +51,7 @@ export function calculateManufacturing(
     materials.push({
       itemId, itemName: item?.name ?? itemId,
       category: cat,
-      baseQuantity: baseQty, adjustedQuantity: adjustedQty,
+      baseQuantity: trueBaseQty, adjustedQuantity: adjustedQty,
       totalQuantity: totalQty, unitPrice, subtotal,
       isBaseMaterial: isBase,
     });
@@ -68,20 +70,22 @@ export function calculateManufacturing(
 
   // 解码器（基底）
   if (decoder) {
+    const decMult = bp.decoderMultiplier ?? 1;
+    const decQty = decMult * config.runs;
     const decPrice = getPrice(decoder.id);
-    const decSubtotal = decPrice !== null ? decPrice * config.runs : null;
+    const decSubtotal = decPrice !== null ? decPrice * decQty : null;
     if (decSubtotal === null) totalMaterialCost = null;
     else if (totalMaterialCost !== null) totalMaterialCost += decSubtotal;
     materials.push({
       itemId: decoder.id, itemName: decoder.name, category: 'decoder',
-      baseQuantity: 1, adjustedQuantity: 1, totalQuantity: config.runs,
+      baseQuantity: decMult, adjustedQuantity: decMult, totalQuantity: decQty,
       unitPrice: decPrice, subtotal: decSubtotal, isBaseMaterial: true,
     });
   }
 
   // 普通材料
   for (const m of bp.materials) {
-    processMaterial(m.itemId, m.quantity, false);
+    processMaterial(m.itemId, m.quantity, m.isBase ?? false);
   }
 
   // 时间 = 基础 × (1+技能) × (1+设施) × (1+解码器)，乘法

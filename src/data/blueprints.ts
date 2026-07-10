@@ -30,6 +30,7 @@ export const defaultBlueprints: Blueprint[] = [
       { itemId: 'megacyte', quantity: 1812 },
     ],
     tags: ['ship', 'ship_regular', 'frigate', 'frigate_intercepter'],
+    decoderMultiplier: 1,
   },
 
   //战列
@@ -61,19 +62,20 @@ export const defaultBlueprints: Blueprint[] = [
       { itemId: 'rokh', quantity: 1.5 },
     ],
     tags: ['ship', 'ship_regular', 'battleship', 'battleship_bomber'],
+    decoderMultiplier: 18,
   },
 ];
 
-export const blueprintProducts: Array<{ id: string; name: string; category: 'product' }> = [
+export const blueprintProducts: Array<{ id: string; name: string; category: 'ship' | 'ammo' }> = [
   //舰船
   //常规
   //护卫
   //截击护卫
   //秃鹫截击
-  { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'product' },
+  { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'ship' },
   //战列
   //基础战列
-  { id: 'rokh', name: '鹏鲲级', category: 'product' },
+  { id: 'rokh', name: '鹏鲲级', category: 'ship' },
   //轰炸战列
-  { id: 'rokh_bomber', name: '鹏鲲级轰炸型', category: 'product' },
+  { id: 'rokh_bomber', name: '鹏鲲级轰炸型', category: 'ship' },
 ];

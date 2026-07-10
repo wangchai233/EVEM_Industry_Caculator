@@ -104,11 +104,13 @@ export function SkillsFacilitiesPanel() {
 
   const bonus = computeBonusSummary(skillLevels, customFacility);
 
-  // 技能分组
-  const skillGroups = defaultSkills.reduce<Record<string, typeof defaultSkills>>((acc, s) => {
+  // 技能分组：category > subcategory > skills
+  const skillGroups = defaultSkills.reduce<Record<string, Record<string, typeof defaultSkills>>>((acc, s) => {
     const cat = s.category ?? '其他';
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(s);
+    const sub = s.subcategory ?? cat; // 无 subcategory 时与 category 同名
+    if (!acc[cat]) acc[cat] = {};
+    if (!acc[cat][sub]) acc[cat][sub] = [];
+    acc[cat][sub].push(s);
     return acc;
   }, {});
 
@@ -148,8 +150,9 @@ export function SkillsFacilitiesPanel() {
           {/* ── 技能分类折叠 ── */}
           <div className={styles.section}>
             <label className={styles.label}>技能等级</label>
-            {Object.entries(skillGroups).map(([cat, skills]) => {
+            {Object.entries(skillGroups).map(([cat, subGroups]) => {
               const isExpanded = expandedCategories.has(cat);
+              const totalInCat = Object.values(subGroups).reduce((sum, arr) => sum + arr.length, 0);
               return (
                 <div key={cat} className={styles.skillGroup}>
                   <div
@@ -157,34 +160,53 @@ export function SkillsFacilitiesPanel() {
                     onClick={() => toggleCategory(cat)}
                   >
                     <span className={styles.skillGroupArrow}>{isExpanded ? '▼' : '▶'}</span>
-                    <span className={styles.skillGroupName}>{cat} ({skills.length})</span>
+                    <span className={styles.skillGroupName}>{cat} ({totalInCat})</span>
                   </div>
                   {isExpanded && (
                     <div className={styles.skillGroupBody}>
-                      {skills.map(skill => {
-                        const levels = skillLevels[skill.id] ?? [0, 0, 0];
-                        const digits = `${levels[0]}${levels[1]}${levels[2]}`;
+                      {Object.entries(subGroups).map(([sub, skills]) => {
+                        const subKey = `${cat}/${sub}`;
+                        const isSubExpanded = expandedCategories.has(subKey);
                         return (
-                          <div key={skill.id} className={styles.skillRow}>
-                            <div className={styles.skillHeader}>
-                              <span className={styles.skillName}>{skill.name}</span>
-                              <span className={styles.skillDigits}>{digits}</span>
+                          <div key={subKey} className={styles.skillSubGroup}>
+                            <div
+                              className={styles.skillSubGroupHeader}
+                              onClick={(e) => { e.stopPropagation(); toggleCategory(subKey); }}
+                            >
+                              <span className={styles.skillGroupArrow}>{isSubExpanded ? '▼' : '▶'}</span>
+                              <span className={styles.skillGroupName}>{sub} ({skills.length})</span>
                             </div>
-                            {[0, 1, 2].map(tier => (
-                              <div key={tier} className={styles.sliderRow}>
-                                <span className={styles.tierLabel}>{TIER_LABELS[tier]}</span>
-                                <input
-                                  type="range"
-                                  min={0}
-                                  max={5}
-                                  step={1}
-                                  value={levels[tier]}
-                                  onChange={(e) => updateSkillLevel(skill.id, tier as 0 | 1 | 2, +e.target.value)}
-                                  className={styles.slider}
-                                />
-                                <span className={styles.sliderValue}>{levels[tier]}</span>
+                            {isSubExpanded && (
+                              <div className={styles.skillGroupBody}>
+                                {skills.map(skill => {
+                                  const levels = skillLevels[skill.id] ?? [0, 0, 0];
+                                  const digits = `${levels[0]}${levels[1]}${levels[2]}`;
+                                  return (
+                                    <div key={skill.id} className={styles.skillRow}>
+                                      <div className={styles.skillHeader}>
+                                        <span className={styles.skillName}>{skill.name}</span>
+                                        <span className={styles.skillDigits}>{digits}</span>
+                                      </div>
+                                      {[0, 1, 2].map(tier => (
+                                        <div key={tier} className={styles.sliderRow}>
+                                          <span className={styles.tierLabel}>{TIER_LABELS[tier]}</span>
+                                          <input
+                                            type="range"
+                                            min={0}
+                                            max={5}
+                                            step={1}
+                                            value={levels[tier]}
+                                            onChange={(e) => updateSkillLevel(skill.id, tier as 0 | 1 | 2, +e.target.value)}
+                                            className={styles.slider}
+                                          />
+                                          <span className={styles.sliderValue}>{levels[tier]}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  );
+                                })}
                               </div>
-                            ))}
+                            )}
                           </div>
                         );
                       })}

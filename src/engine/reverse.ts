@@ -72,17 +72,18 @@ export function calculateReverse(
 
   // 解码器
   if (decoder) {
+    const decMult = revData.decoderMultiplier ?? 1;
     const decPrice = getPrice(decoder.id);
-    const decSubtotal = decPrice !== null ? decPrice : null;
+    const decSubtotal = decPrice !== null ? decPrice * decMult : null;
     if (decSubtotal === null) totalMaterialCost = null;
     else if (totalMaterialCost !== null) totalMaterialCost += decSubtotal;
     materials.push({
       itemId: decoder.id,
       itemName: decoder.name,
       category: 'decoder',
-      baseQuantity: 1,
-      adjustedQuantity: 1,
-      totalQuantity: 1,
+      baseQuantity: decMult,
+      adjustedQuantity: decMult,
+      totalQuantity: decMult,
       unitPrice: decPrice,
       subtotal: decSubtotal,
       isBaseMaterial: true,

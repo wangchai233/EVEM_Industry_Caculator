@@ -116,10 +116,10 @@ export const defaultItems: Item[] = [
   //常规
   //护卫舰
   //截击护卫舰
-  { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'product' },
+  { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'ship' },
   //战列舰
   //基础战列舰
-  { id: 'rokh', name: '鹏鲲级', category: 'product' },
+  { id: 'rokh', name: '鹏鲲级', category: 'ship' },
   //轰炸战列舰
-  { id: 'rokh_bomber', name: '鹏鲲级轰炸型', category: 'product' },
+  { id: 'rokh_bomber', name: '鹏鲲级轰炸型', category: 'ship' },
 ];

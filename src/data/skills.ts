@@ -7,6 +7,7 @@ export const defaultSkills: SkillDef[] = [
     id: 'frigate_manufacturing',
     name: '护卫舰制造技术',
     category: '工业技术',
+    subcategory: '生产',
     skillType: 'mfg',
     matchTags: ['frigate'],
     base: {
@@ -41,6 +42,7 @@ export const defaultSkills: SkillDef[] = [
     id: 'battleship_manufacturing',
     name: '战列舰制造技术',
     category: '工业技术',
+    subcategory: '生产',
     skillType: 'mfg',
     matchTags: ['battleship'],
     base: {
@@ -78,8 +80,10 @@ export const defaultSkills: SkillDef[] = [
     id: 'caldari_invention',
     name: '加达里发明原理',
     category: '应用科学',
+    subcategory: '发明原理',
     skillType: 'rev',
-    matchTags: ['caldari'],
+    matchMode: 'all',
+    matchTags: ['caldari', 'ship_regular'],
     base: {
       effects: [
         { timeEfficiency: -0.05, successRate: 0 },

@@ -29,7 +29,9 @@ export function resolveBonuses(
     // 技能范围隔离：mfg 技能只在制造生效，rev 只在逆向生效
     if (skill.skillType !== projectType && skill.skillType !== 'both') continue;
 
-    const hasMatch = skill.matchTags.some(t => productTags.includes(t));
+    const hasMatch = skill.matchMode === 'all'
+      ? skill.matchTags.every(t => productTags.includes(t))
+      : skill.matchTags.some(t => productTags.includes(t));
     if (!hasMatch) continue;
 
     const [base, adv, exp] = skillLevels[skill.id] ?? [0, 0, 0];

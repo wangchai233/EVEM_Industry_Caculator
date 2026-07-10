@@ -103,6 +103,28 @@
   padding: 4px 0 4px 12px;
 }
 
+/* ── 子分组（二级） ── */
+.skillSubGroup {
+  margin-bottom: 2px;
+}
+
+.skillSubGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.skillSubGroupHeader:hover {
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
 /* ── 设施复选框 ── */
 .facilityRow {
   display: flex;

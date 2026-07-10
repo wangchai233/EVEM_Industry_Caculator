@@ -1,3 +1,5 @@
+import type { MaterialEntry } from './item';
+
 export interface Blueprint {
   id: string;
   name: string;
@@ -6,9 +8,10 @@ export interface Blueprint {
   productQuantity: number;
   baseTime: number;
   baseCost: number;
-  materials: { itemId: string; quantity: number }[];
+  materials: MaterialEntry[];
   maxRuns: number;
   tags: string[]; // 产品标签
+  decoderMultiplier?: number; // 解码器消耗倍率，默认 1
   isCustom?: boolean;
 }
 
@@ -34,7 +37,8 @@ export interface ReverseEngineeringData {
   maxBaseSuccessRate: number; // 最大基础成功率（如 0.50 = 50%）
   baseTime: number;
   baseCost: number;
-  dataCores: { itemId: string; quantity: number }[];
+  dataCores: MaterialEntry[];
   tags: string[];
+  decoderMultiplier?: number; // 解码器消耗倍率，默认 1
   isCustom?: boolean;
 }

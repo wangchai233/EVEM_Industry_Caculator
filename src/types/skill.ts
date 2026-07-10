@@ -13,7 +13,9 @@ export interface SkillDef {
   id: string;
   name: string;
   category?: string; // 技能分类，如 '工业技术'、'应用科学'
+  subcategory?: string; // 技能子分类，如 '生产'、'发明原理'
   skillType: 'mfg' | 'rev' | 'both'; // 技能类型：制造/逆向工程/通用
+  matchMode?: 'all' | 'any'; // 标签匹配模式：all=全部匹配，默认为 any
   matchTags: string[];      // 匹配的产品标签 ID 列表
   base: SkillTier;           // 基础阶段
   advanced: SkillTier;       // 进阶阶段
