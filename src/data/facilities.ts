@@ -2,7 +2,7 @@ import type { FacilityDef } from '../types';
 
 export const defaultFacilities: FacilityDef[] = [
   {
-    id: 'assembly_3', name: '组装车间模块 III', matchTags: ['regular_ship'],
+    id: 'assembly_3', name: '组装车间模块 III', matchTags: ['ship_regular'],
     materialEfficiency: 0.05,
   },
 ];

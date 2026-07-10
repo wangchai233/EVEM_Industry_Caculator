@@ -21,12 +21,23 @@ export function MaterialList() {
 
   const categoryNames: Record<string, string> = {
     mineral: '矿物',
-    planetary: '行星材料',
-    data_core: '数据核心',
+    lunarite: '卫星矿物',
+    fullerite: '气云',
+    intermediate_product: '中间产物',
+    refined_material: '提炼材料',
+    planetary: '行星产物',
+    data: '数据',
     decoder: '解码器',
+    nanocore_material: '纳米核心材料',
+    unit: '组件',
+    implant_material: '植入体材料',
+    implant: '植入体',
+    product: '制造产品',
     damaged_structure: '基底材料',
     blueprint: '蓝图',
     ship: '舰船',
+    ammo: '弹药',
+    currency: '货币',
   };
 
   const toggleOverwrite = (cat: string) => {

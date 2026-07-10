@@ -13,7 +13,7 @@ export type ItemCategory =
   | 'unit'//组件
   | 'implant_material'//植入体材料
   | 'implant'//植入体
-  | 'product'
+  | 'product'//制造产品
   | 'ship'//舰船
   | 'ammo'//弹药
   | 'currency';//货币

@@ -107,10 +107,19 @@ export const defaultItems: Item[] = [
   //舰船碎片
   { id: 'damaged_caldari_8', name: '加达里 8 级受损结构', category: 'ship_debris' },
 
+  //数据
   //数据核心
   { id: 'data_core_caldari_engineering', name: '数据核心 - 加达里星舰工程', category: 'data' },
   { id: 'data_core_rocket_science', name: '数据核心 - 火箭科学', category: 'data' },
 
   //舰船
+  //常规
+  //护卫舰
+  //截击护卫舰
   { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'product' },
+  //战列舰
+  //基础战列舰
+  { id: 'rokh', name: '鹏鲲级', category: 'product' },
+  //轰炸战列舰
+  { id: 'rokh_bomber', name: '鹏鲲级轰炸型', category: 'product' },
 ];
