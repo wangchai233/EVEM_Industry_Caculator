@@ -50,6 +50,6 @@ export const defaultReverse: ReverseEngineeringData[] = [
       { itemId: 'data_core_caldari_engineering', quantity: 3 },
       { itemId: 'data_core_rocket_science', quantity: 3 },
     ],
-    tags: ['ship', 'regular_ship', 'frigate', 'caldari', 'interceptor'],
+    tags: ['ship', 'regular_ship', 'frigate', 'frigate_interceptor', 'caldari'],
   },
 ];

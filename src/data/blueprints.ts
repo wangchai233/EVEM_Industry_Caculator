@@ -1,6 +1,7 @@
 import type { Blueprint } from '../types';
 
 export const defaultBlueprints: Blueprint[] = [
+  /*
   {
     id: 'bp_t9_bs',
     name: 'T9 战列舰蓝图',
@@ -24,6 +25,8 @@ export const defaultBlueprints: Blueprint[] = [
     ],
     tags: ['ship', 'regular_ship', 'battleship'],
   },
+  */
+  /*
   {
     id: 'bp_t8_cruiser',
     name: 'T8 巡洋舰蓝图',
@@ -44,6 +47,7 @@ export const defaultBlueprints: Blueprint[] = [
     ],
     tags: ['ship', 'regular_ship', 'cruiser'],
   },
+  */
   // v2 秃鹫级截击型
   {
     id: 'bp_condor_interceptor',
@@ -55,11 +59,11 @@ export const defaultBlueprints: Blueprint[] = [
     baseCost: 9000000,
     maxRuns: 10,
     materials: [
-      { itemId: 'sparkle_alloy', quantity: 6642 },
-      { itemId: 'precision_alloy', quantity: 5898 },
-      { itemId: 'fiber_composite', quantity: 7526 },
-      { itemId: 'noble_metal', quantity: 7526 },
-      { itemId: 'reactive_metal', quantity: 1872 },
+      { itemId: 'gleaming_alloy', quantity: 6642 },
+      { itemId: 'precious_alloy', quantity: 5898 },
+      { itemId: 'plush_compound', quantity: 7526 },
+      { itemId: 'noble_metals', quantity: 7526 },
+      { itemId: 'reactive_metals', quantity: 1872 },
       { itemId: 'tritanium', quantity: 2467871 },
       { itemId: 'pyerite', quantity: 854016 },
       { itemId: 'mexallon', quantity: 233964 },
@@ -68,12 +72,14 @@ export const defaultBlueprints: Blueprint[] = [
       { itemId: 'zydrine', quantity: 4448 },
       { itemId: 'megacyte', quantity: 1812 },
     ],
-    tags: ['ship', 'regular_ship', 'frigate', 'interceptor_frigate'],
+    tags: ['ship', 'regular_ship', 'frigate', 'frigate_intercepter'],
   },
 ];
 
 export const blueprintProducts: Array<{ id: string; name: string; category: 'product' }> = [
+  /*
   { id: 't9_battleship', name: 'T9 战列舰', category: 'product' },
   { id: 't8_cruiser', name: 'T8 巡洋舰', category: 'product' },
+  */
   { id: 'condor_interceptor', name: '秃鹫级截击型', category: 'product' },
 ];

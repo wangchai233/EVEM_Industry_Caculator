@@ -1,13 +1,22 @@
 export type ItemCategory =
-  | 'mineral'
-  | 'planetary'
-  | 'data_core'
-  | 'decoder'
-  | 'blueprint'
-  | 'damaged_structure'
+  | 'mineral'//矿物
+  | 'lunarite'//卫星矿
+  | 'fullerite'//气云
+  | 'intermediate_product'//中间产物
+  | 'planetary'//行星产物
+  | 'refined_material'//提炼材料
+  | 'data'//数据
+  | 'decoder'//解码器
+  | 'blueprint'//蓝图
+  | 'ship_debris'//舰船碎片（受损结构）
+  | 'nanocore_material'//纳米核心材料
+  | 'unit'//组件
+  | 'implant_material'//植入体材料
+  | 'implant'//植入体
   | 'product'
-  | 'ship'
-  | 'isk';
+  | 'ship'//舰船
+  | 'ammo'//弹药
+  | 'currency';//货币
 
 export interface Item {
   id: string;
